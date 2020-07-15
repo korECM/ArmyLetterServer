@@ -1,28 +1,10 @@
-import {
-  addSoldier,
-  login,
-  createCafeCheck,
-  sendLetter,
-  deleteSoldier,
-  getProfileInfo,
-  checkNickname,
-} from "./ArmyService";
+import { addSoldier, login, createCafeCheck, sendLetter, deleteSoldier, getProfileInfo, checkNickname } from './ArmyService';
 
-import {
-  getSoldierList,
-  getSessionId,
-  AirForceSendLetter,
-} from "./AirForceService";
+import { getSoldierList, getSessionId, AirForceSendLetter } from './AirForceService';
 
-import {
-  ArmySoldier,
-  Cookie,
-  ArmyLetter,
-  AirForceSoldier,
-  AirForceLetter,
-} from "../Models";
-import { checkEmail } from "../Utils";
-import { updateNickname } from "./ArmyService/updateNickname";
+import { ArmySoldier, Cookie, ArmyLetter, AirForceSoldier, AirForceLetter } from '../Models';
+import { checkEmail } from '../Utils';
+import { updateNickname } from './ArmyService/updateNickname';
 
 class MilitaryLetter {
   private soldier: ArmySoldier | AirForceSoldier | null = null;
@@ -43,10 +25,10 @@ class MilitaryLetter {
    */
   public async config(id: string, pw: string) {
     if (!checkEmail(id)) {
-      throw new Error("유효한 이메일 형식이 아닙니다");
+      throw new Error('유효한 이메일 형식이 아닙니다');
     }
     if (!id || id.length === 0 || !pw || pw.length === 0) {
-      throw new Error("아이디 또는 비밀번호가 제대로 전달되지 않았습니다");
+      throw new Error('아이디 또는 비밀번호가 제대로 전달되지 않았습니다');
     }
     try {
       let cookie = await login(id, pw);
@@ -63,12 +45,9 @@ class MilitaryLetter {
    * @param {number} [selectNum=0] 해당 정보와 일치하는 훈련병이 여러명인 경우 한명을 선택하는 인덱스입니다. 기본값은 0입니다.
    * @memberof MilitaryLetter
    */
-  public async setSoldier(
-    soldier: ArmySoldier | AirForceSoldier,
-    selectNum: number = 0
-  ) {
+  public async setSoldier(soldier: ArmySoldier | AirForceSoldier, selectNum: number = 0) {
     if (soldier === undefined || soldier === null) {
-      throw new Error("군인이 제대로 전달되지 않았습니다");
+      throw new Error('군인이 제대로 전달되지 않았습니다');
     }
     this.soldier = soldier;
     if (this.soldier instanceof ArmySoldier) {
@@ -84,7 +63,7 @@ class MilitaryLetter {
       this.tempSoldierList = await getSoldierList(this.soldier!);
       // console.log(this.tempSoldierList);
       if (this.tempSoldierList.length === 0) {
-        throw new Error("해당 정보와 일치하는 군인이 존재하지 않습니다");
+        throw new Error('해당 정보와 일치하는 군인이 존재하지 않습니다');
       }
       await this.selectSoldier(selectNum);
     }
@@ -108,9 +87,7 @@ class MilitaryLetter {
   private async selectSoldier(selectNum: number) {
     if (this.tempSoldierList.length > 0) {
       if (selectNum >= this.tempSoldierList.length) {
-        throw new Error(
-          "공군 선택 과정에서 범위를 벗어나는 인덱스가 주어졌습니다. selectNum을 다시 설정해 주세요."
-        );
+        throw new Error('공군 선택 과정에서 범위를 벗어나는 인덱스가 주어졌습니다. selectNum을 다시 설정해 주세요.');
       }
       this.soldier = this.tempSoldierList[selectNum];
       this.cookie = await getSessionId(this.soldier);
@@ -121,9 +98,7 @@ class MilitaryLetter {
    * @param {(Letter | Letter[] | AirForceLetter | AirForceLetter[])} letter  보낼 편지를 받는 매개변수입니다. 한번에 여러장을 보내고싶다면 배열로 전달하면 됩니다.
    * @memberof MilitaryLetter
    */
-  public async sendLetter(
-    letter: ArmyLetter | ArmyLetter[] | AirForceLetter | AirForceLetter[]
-  ) {
+  public async sendLetter(letter: ArmyLetter | ArmyLetter[] | AirForceLetter | AirForceLetter[]) {
     this.checkReady();
     //TODO: Letter 잘못주면 어케 되는지 테스트 필요
     if (this.soldier instanceof ArmySoldier) {
@@ -134,7 +109,17 @@ class MilitaryLetter {
         arrayLetter = <ArmyLetter[]>letter;
       }
       arrayLetter.map(async (letter) => {
-        await sendLetter(this.soldier! as ArmySoldier, this.cookie!, letter);
+        let letters: ArmyLetter[] = [];
+        let count = 0;
+        while (letter.body.length > 1490) {
+          letters.push(new ArmyLetter(letter.title + ' - ' + (count + 1).toString(), letter.body.substring(0, 1490)));
+          count++;
+          letter.body = letter.body.substring(1490);
+        }
+        letters.push(new ArmyLetter(letter.title + (count === 0 ? '' : ' - ' + (count + 1).toString()), letter.body));
+        letters.map(async (realLetter) => {
+          await sendLetter(this.soldier! as ArmySoldier, this.cookie!, realLetter);
+        });
       });
     } else if (this.soldier instanceof AirForceSoldier) {
       let arrayLetter: AirForceLetter[];
@@ -162,7 +147,7 @@ class MilitaryLetter {
   public async updateNickname(nickname: string): Promise<boolean> {
     this.checkReady();
     if (!nickname || nickname.length === 0) {
-      throw new Error("공백을 이름으로 설정할 수 없습니다");
+      throw new Error('공백을 이름으로 설정할 수 없습니다');
     }
     if (this.cookie && (await this.checkNickname(nickname))) {
       return await updateNickname(this.cookie, this.profileSeq!, nickname);
@@ -175,7 +160,7 @@ class MilitaryLetter {
     if (this.cookie) {
       let temp = await getProfileInfo(this.cookie);
       if (temp) this.profileSeq = temp;
-      else throw new Error("profileSeq 구하는데 실패");
+      else throw new Error('profileSeq 구하는데 실패');
       return await checkNickname(this.cookie, nickname);
     } else {
       return Promise.resolve(false);
@@ -205,7 +190,7 @@ class MilitaryLetter {
     } else if (this.soldier instanceof AirForceSoldier) {
       return this.soldier!.soldierInfo!;
     }
-    return "";
+    return '';
   }
 
   /**
@@ -223,19 +208,19 @@ class MilitaryLetter {
 
   private checkSoldierSet() {
     if (this.soldier === null) {
-      throw new Error("설정된 군인이 없습니다");
+      throw new Error('설정된 군인이 없습니다');
     }
   }
 
   private checkLogin() {
     if (!this.isLogin) {
-      throw new Error("로그인 먼저 해야합니다");
+      throw new Error('로그인 먼저 해야합니다');
     }
   }
 
   private checkAirForceReady() {
     if (!this.soldier || this.tempSoldierList.length === 0) {
-      throw new Error("공군을 먼저 설정해야 합니다.");
+      throw new Error('공군을 먼저 설정해야 합니다.');
     }
   }
 
@@ -249,9 +234,4 @@ class MilitaryLetter {
 }
 
 export { MilitaryLetter };
-export {
-  AirForceSoldier,
-  ArmySoldier,
-  AirForceLetter,
-  ArmyLetter,
-} from "../Models";
+export { AirForceSoldier, ArmySoldier, AirForceLetter, ArmyLetter } from '../Models';
