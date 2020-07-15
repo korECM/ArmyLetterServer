@@ -1,0 +1,257 @@
+import {
+  addSoldier,
+  login,
+  createCafeCheck,
+  sendLetter,
+  deleteSoldier,
+  getProfileInfo,
+  checkNickname,
+} from "./ArmyService";
+
+import {
+  getSoldierList,
+  getSessionId,
+  AirForceSendLetter,
+} from "./AirForceService";
+
+import {
+  ArmySoldier,
+  Cookie,
+  ArmyLetter,
+  AirForceSoldier,
+  AirForceLetter,
+} from "../Models";
+import { checkEmail } from "../Utils";
+import { updateNickname } from "./ArmyService/updateNickname";
+
+class MilitaryLetter {
+  private soldier: ArmySoldier | AirForceSoldier | null = null;
+  private tempSoldierList: AirForceSoldier[] = [];
+  private profileSeq?: number;
+  private isLogin: boolean = false;
+  private cookie: Cookie | null = null;
+
+  constructor() {}
+  /**
+   * 더캠프의 경우 편지를 보내기 위해서 로그인 정보가 필요합니다
+   *
+   * SNS 로그인은 지원하지 않으며 매개변수로 아이디와 패스워드를 전달해야 합니다.
+   *
+   * @param {string} id
+   * @param {string} pw
+   * @memberof MilitaryLetter
+   */
+  public async config(id: string, pw: string) {
+    if (!checkEmail(id)) {
+      throw new Error("유효한 이메일 형식이 아닙니다");
+    }
+    if (!id || id.length === 0 || !pw || pw.length === 0) {
+      throw new Error("아이디 또는 비밀번호가 제대로 전달되지 않았습니다");
+    }
+    try {
+      let cookie = await login(id, pw);
+      this.cookie = cookie!;
+      this.isLogin = true;
+    } catch (error) {
+      this.isLogin = false;
+      throw error;
+    }
+  }
+
+  /**
+   * @param {(ArmySoldier | AirForceSoldier)} soldier 설정할 군인입니다.
+   * @param {number} [selectNum=0] 해당 정보와 일치하는 훈련병이 여러명인 경우 한명을 선택하는 인덱스입니다. 기본값은 0입니다.
+   * @memberof MilitaryLetter
+   */
+  public async setSoldier(
+    soldier: ArmySoldier | AirForceSoldier,
+    selectNum: number = 0
+  ) {
+    if (soldier === undefined || soldier === null) {
+      throw new Error("군인이 제대로 전달되지 않았습니다");
+    }
+    this.soldier = soldier;
+    if (this.soldier instanceof ArmySoldier) {
+      this.checkLogin();
+      try {
+        await addSoldier(this.soldier!, this.cookie!);
+        await createCafeCheck(this.soldier!, this.cookie!);
+        // await deleteSoldier(this.soldier!, this.cookie!);
+      } catch (error) {
+        throw error;
+      }
+    } else if (this.soldier instanceof AirForceSoldier) {
+      this.tempSoldierList = await getSoldierList(this.soldier!);
+      // console.log(this.tempSoldierList);
+      if (this.tempSoldierList.length === 0) {
+        throw new Error("해당 정보와 일치하는 군인이 존재하지 않습니다");
+      }
+      await this.selectSoldier(selectNum);
+    }
+  }
+  /**
+   * 공군의 경우 주어진 정보와 일치하는 군인들을 모두 반환하는 함수입니다.
+   *
+   * 해당 정보와 일치하는 군인이 존재하지 않거나 `setSoldier`를 하기 전이라면 빈 배열을 반환합니다.
+   * @returns {AirForceSoldier[]}
+   * @memberof MilitaryLetter
+   */
+  public getAirForceSoldierList(): AirForceSoldier[] {
+    // if (this.tempSoldierList.length === 0) {
+    //   throw new Error(
+    //     "해당 정보와 일치하는 군인이 존재하지 않거나 군인을 설정하지 않았습니다."
+    //   );
+    // }
+    return this.tempSoldierList;
+  }
+
+  private async selectSoldier(selectNum: number) {
+    if (this.tempSoldierList.length > 0) {
+      if (selectNum >= this.tempSoldierList.length) {
+        throw new Error(
+          "공군 선택 과정에서 범위를 벗어나는 인덱스가 주어졌습니다. selectNum을 다시 설정해 주세요."
+        );
+      }
+      this.soldier = this.tempSoldierList[selectNum];
+      this.cookie = await getSessionId(this.soldier);
+    }
+  }
+  /**
+   * 편지를 보내는 함수입니다.
+   * @param {(Letter | Letter[] | AirForceLetter | AirForceLetter[])} letter  보낼 편지를 받는 매개변수입니다. 한번에 여러장을 보내고싶다면 배열로 전달하면 됩니다.
+   * @memberof MilitaryLetter
+   */
+  public async sendLetter(
+    letter: ArmyLetter | ArmyLetter[] | AirForceLetter | AirForceLetter[]
+  ) {
+    this.checkReady();
+    //TODO: Letter 잘못주면 어케 되는지 테스트 필요
+    if (this.soldier instanceof ArmySoldier) {
+      let arrayLetter: ArmyLetter[];
+      if (!(<ArmyLetter[]>letter).length) {
+        arrayLetter = [<ArmyLetter>letter];
+      } else {
+        arrayLetter = <ArmyLetter[]>letter;
+      }
+      arrayLetter.map(async (letter) => {
+        await sendLetter(this.soldier! as ArmySoldier, this.cookie!, letter);
+      });
+    } else if (this.soldier instanceof AirForceSoldier) {
+      let arrayLetter: AirForceLetter[];
+      if (!(<AirForceLetter[]>letter).length) {
+        arrayLetter = [<AirForceLetter>letter];
+      } else {
+        arrayLetter = <AirForceLetter[]>letter;
+      }
+      arrayLetter.map(async (letter) => {
+        await AirForceSendLetter(this.cookie!, letter);
+      });
+    }
+  }
+
+  /**
+   * 더캠프의 경우 편지 발신인을 설정해주기 위한 함수입니다.
+   *
+   * 이름이 중복되는 경우 닉네임을 업데이트 할 수 없습니다
+   *
+   * 이름 변경 선공 여부를 프라미스로 반환합니다
+   * @param {string} nickname 설정할 이름
+   * @returns {Promise<boolean>}
+   * @memberof MilitaryLetter
+   */
+  public async updateNickname(nickname: string): Promise<boolean> {
+    this.checkReady();
+    if (!nickname || nickname.length === 0) {
+      throw new Error("공백을 이름으로 설정할 수 없습니다");
+    }
+    if (this.cookie && (await this.checkNickname(nickname))) {
+      return await updateNickname(this.cookie, this.profileSeq!, nickname);
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+
+  private async checkNickname(nickname: string): Promise<boolean> {
+    if (this.cookie) {
+      let temp = await getProfileInfo(this.cookie);
+      if (temp) this.profileSeq = temp;
+      else throw new Error("profileSeq 구하는데 실패");
+      return await checkNickname(this.cookie, nickname);
+    } else {
+      return Promise.resolve(false);
+    }
+  }
+  /**
+   * 설정한 군인을 반환하는 함수입니다.
+   *
+   * 군인을 설정하지 않은 경우 null을 반환합니다
+   * @returns {(ArmySoldier | AirForceSoldier | null)}
+   * @memberof MilitaryLetter
+   */
+  public getSoldier(): ArmySoldier | AirForceSoldier | null {
+    return this.soldier;
+  }
+  /**
+   * 군인이 어디서 훈련 받는지를 반환하는 함수입니다.
+   *
+   * ex) 신병2대대 1중대 2소대 122호실 24번
+   * @returns {string}
+   * @memberof MilitaryLetter
+   */
+  public getTrainUnitEduName(): string {
+    this.checkSoldierSet();
+    if (this.soldier instanceof ArmySoldier) {
+      return this.soldier!.trainUnitEdNm!;
+    } else if (this.soldier instanceof AirForceSoldier) {
+      return this.soldier!.soldierInfo!;
+    }
+    return "";
+  }
+
+  /**
+   * 수료일을 반환합니다.
+   *
+   * 날짜형식 : YYYY-MM-DD
+   *
+   * @returns {string}
+   * @memberof MilitaryLetter
+   */
+  public getEndDay(): string {
+    this.checkSoldierSet();
+    return this.soldier!.endDate!;
+  }
+
+  private checkSoldierSet() {
+    if (this.soldier === null) {
+      throw new Error("설정된 군인이 없습니다");
+    }
+  }
+
+  private checkLogin() {
+    if (!this.isLogin) {
+      throw new Error("로그인 먼저 해야합니다");
+    }
+  }
+
+  private checkAirForceReady() {
+    if (!this.soldier || this.tempSoldierList.length === 0) {
+      throw new Error("공군을 먼저 설정해야 합니다.");
+    }
+  }
+
+  private checkReady() {
+    if (this.soldier instanceof ArmySoldier) {
+      this.checkLogin();
+    } else if (this.soldier instanceof AirForceSoldier) {
+      this.checkAirForceReady();
+    }
+  }
+}
+
+export { MilitaryLetter };
+export {
+  AirForceSoldier,
+  ArmySoldier,
+  AirForceLetter,
+  ArmyLetter,
+} from "../Models";
