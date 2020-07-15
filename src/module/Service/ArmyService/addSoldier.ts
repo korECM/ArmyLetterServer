@@ -50,7 +50,7 @@ async function addSoldier(soldier: ArmySoldier, cookie: Cookie) {
     }
     if (res.statusCode === 200 && body.resultCd === 'E001') {
       // throw new Error(body.resultMsg);
-      console.log(soldier.name, ' : ', body.resultMsg);
+      console.log(soldier.name, " : ",body.resultMsg);
     }
   });
   if (!response) {
