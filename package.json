@@ -10,17 +10,19 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
+    "cheerio": "^1.0.0-rc.3",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "express-validator": "^6.6.0",
-    "military-letter": "^0.0.13",
     "mongoose": "^5.9.24",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "request-promise": "^4.2.5"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.21",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
     "@types/dotenv": "^8.2.0",
@@ -31,6 +33,7 @@
     "@types/mongoose": "^5.7.29",
     "@types/morgan": "^1.9.1",
     "@types/node": "^14.0.14",
+    "@types/request-promise": "^4.1.46",
     "@types/supertest": "^2.0.10",
     "jest": "^26.1.0",
     "nodemon": "^2.0.4",
