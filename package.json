@@ -16,6 +16,7 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "express-validator": "^6.6.0",
+    "military-letter": "^0.0.13",
     "mongoose": "^5.9.24",
     "morgan": "^1.10.0"
   },
