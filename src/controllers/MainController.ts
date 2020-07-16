@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { findArmySoldier } from '../services/FindSoldier';
+import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
 import { ArmySoldierInterface } from '../module/Models/Army';
+import { AirForceSoldierInterface } from '../module/Models';
 
 export let createArmySoldierValidator = [
   body('name').notEmpty(),
@@ -28,7 +29,7 @@ export async function createArmySoldier(soldier: ArmySoldierInterface) {
   return soldierFromArmy;
 }
 
-export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').isDate()];
+export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').notEmpty().isLength({ max: 8, min: 8 })];
 
 export async function createAirSoldierProxy(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
@@ -36,11 +37,12 @@ export async function createAirSoldierProxy(req: Request, res: Response, next: N
     return res.status(400).send();
   }
 
-  await createAirSoldier();
+  const soldier = await createAirSoldier(req.body);
 
-  return res.status(201).json();
+  return res.status(201).json(soldier);
 }
 
-export async function createAirSoldier() {
-  return null;
+export async function createAirSoldier(soldier: AirForceSoldierInterface) {
+  const soldierFromAirForce = await findAirForceSoldier(soldier);
+  return soldierFromAirForce;
 }

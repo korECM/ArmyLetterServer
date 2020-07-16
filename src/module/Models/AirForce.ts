@@ -1,4 +1,14 @@
-import { checkDate } from "../Utils";
+import { checkDate } from '../Utils';
+
+export interface AirForceSoldierInterface {
+  name: string;
+  birthDate: string;
+  enterDate?: string;
+  endDate?: string;
+  traineeNum?: string;
+  soldierInfo?: string;
+  imageURL?: string;
+}
 
 class AirForceSoldier {
   public name: string;
@@ -19,25 +29,19 @@ class AirForceSoldier {
    * @param {string} birthDate 생일 ex) 19990304
    * @memberof AirForceSoldier
    */
-  constructor(
-    name: string,
-    birthDate: string,
-    enterDate?: string,
-    endDate?: string,
-    traineeNum?: string,
-    soldierInfo?: string,
-    imageURL?: string
-  ) {
+  constructor(soldier: AirForceSoldierInterface) {
+    const { birthDate, name, endDate, enterDate, imageURL, soldierInfo, traineeNum } = soldier;
+
     if (!checkDate(birthDate, false)) {
-      throw new Error("유효하지 않은 생일");
+      throw new Error('유효하지 않은 생일');
     }
     this.name = name;
     this.birthDate = birthDate;
-    this.enterDate = enterDate || "";
-    this.endDate = endDate || "";
-    this.traineeNum = traineeNum || "";
-    this.soldierInfo = soldierInfo || "";
-    this.imageURL = imageURL || "";
+    this.enterDate = enterDate || '';
+    this.endDate = endDate || '';
+    this.traineeNum = traineeNum || '';
+    this.soldierInfo = soldierInfo || '';
+    this.imageURL = imageURL || '';
   }
 }
 

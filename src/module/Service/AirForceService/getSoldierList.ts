@@ -102,7 +102,7 @@ async function getSoldierList(soldier: AirForceSoldier): Promise<AirForceSoldier
             .children('input')
             .attr('onclick')
             ?.replace(/[^0-9]/g, '');
-          let newSoldier = new AirForceSoldier(name, soldier.birthDate, enterDate, endDate, traineeNum, info, imageURL);
+          let newSoldier = new AirForceSoldier({ name, birthDate: soldier.birthDate, enterDate, endDate, traineeNum, soldierInfo: info, imageURL });
           AFSoldierList.push(newSoldier);
         });
         resolve(AFSoldierList);

@@ -1,5 +1,5 @@
 import { MilitaryLetter, ArmySoldier, ArmyLetter } from '../module/Service/MilitaryLetter';
-import { ArmySoldierInterface } from '../module/Models';
+import { ArmySoldierInterface, AirForceSoldierInterface, AirForceSoldier } from '../module/Models';
 
 export async function findArmySoldier(soldier: ArmySoldierInterface) {
   const ml = new MilitaryLetter();
@@ -14,6 +14,21 @@ export async function findArmySoldier(soldier: ArmySoldierInterface) {
 
     await ml.updateNickname('윤종원.');
 
+    await ml.setSoldier(targetSoldier);
+
+    return ml.getSoldier();
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+export async function findAirForceSoldier(soldier: AirForceSoldierInterface) {
+  const ml = new MilitaryLetter();
+
+  let targetSoldier: AirForceSoldier = new AirForceSoldier(soldier);
+
+  try {
     await ml.setSoldier(targetSoldier);
 
     return ml.getSoldier();
