@@ -41,6 +41,8 @@ export async function createAirSoldierProxy(req: Request, res: Response, next: N
 
   const soldier = await createAirSoldier(req.body);
 
+  if (soldier == null) return res.status(404).send();
+
   return res.status(201).json(soldier);
 }
 
