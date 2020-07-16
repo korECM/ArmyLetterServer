@@ -28,7 +28,7 @@ const createCafeCheck = async (soldier: ArmySoldier, cookie: Cookie) => {
     if (err) {
       throw new Error(err);
     }
-    console.log(res.statusCode, `-`, res.statusMessage, ' ', body);
+    // console.log(res.statusCode, `-`, res.statusMessage, ' ', body);
     if (res.statusCode === 200 && body.resultCd !== '0000' && body.resultCd !== '9999') {
       error = new Error('훈련병 정보가 잘못 되었거나 아직 카페가 개설되지 않았습니다');
       // throw new Error(
