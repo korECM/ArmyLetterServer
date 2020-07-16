@@ -49,7 +49,7 @@ describe('MainRouter Test', () => {
       done();
     });
 
-    it('존재하지 않는 군인 정보가 주어지면 404 반환환', async (done) => {
+    it('존재하지 않는 군인 정보가 주어지면 404 반환', async (done) => {
       const response = await request(app).post('/main/air').send({
         birthDate: '19991026',
         name: '뷁뷁뷁',
