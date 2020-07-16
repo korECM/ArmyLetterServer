@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { findArmySoldier } from '../services/FindSoldier';
+import { ArmySoldierInterface } from '../module/Models/Army';
 
-let createArmySoldierValidator = [
+export let createArmySoldierValidator = [
   body('name').notEmpty(),
   body('armyType').notEmpty(),
   body('armyUnit').notEmpty(),
@@ -10,16 +11,19 @@ let createArmySoldierValidator = [
   body('enterDate').isDate(),
 ];
 
-export async function createArmySoldier(req: Request, res: Response, next: NextFunction) {
+export async function createArmySoldierProxy(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.error(errors);
     return res.status(400).send();
   }
 
-  await findArmySoldier();
+  const soldier = await createArmySoldier(req.body);
 
-  res.send('Hello');
+  return res.status(201).json(soldier);
 }
 
-export { createArmySoldierValidator };
+export async function createArmySoldier(soldier: ArmySoldierInterface) {
+  const soldierFromArmy = await findArmySoldier(soldier);
+
+  return soldierFromArmy;
+}
