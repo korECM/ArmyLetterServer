@@ -2,7 +2,7 @@ import request from 'supertest';
 import { app } from '../../index';
 
 describe('MainRouter Test', () => {
-  describe('createArmySoldierProxy', () => {
+  describe('/main/army', () => {
     it('body에 적절한 내용 없으면 400 반환', async (done) => {
       // TODO: 각 항목 별로 테스트
 
