@@ -6,15 +6,15 @@ describe('MainController Test', () => {
     it('body에 적절한 내용 없으면 400 반환', async (done) => {
       // TODO: 각 항목 별로 테스트
 
-      const response = await request(app).post('/main/air').send({});
-
+      const response = await request(app).post('/main/army').send({});
+      console.log(response.error);
       expect(response.status).toEqual(400);
 
       done();
     });
 
     it('적절한 데이터가 주어진다면 ~~~ 한다', async (done) => {
-      const response = await request(app).post('/main/air').send({
+      const response = await request(app).post('/main/army').send({
         armyType: '육군',
         armyUnit: '육군훈련소-논산',
         enterDate: '2020-06-15',
