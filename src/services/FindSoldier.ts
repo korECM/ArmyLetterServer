@@ -1,5 +1,5 @@
-import { MilitaryLetter, ArmySoldier, ArmyLetter } from '../module/Service/MilitaryLetter';
-import { ArmySoldierInterface, AirForceSoldierInterface, AirForceSoldier } from '../module/Models';
+import { MilitaryLetter, ArmySoldier, ArmyLetter } from '../module/MIL/Service/MilitaryLetter';
+import { ArmySoldierInterface, AirForceSoldierInterface, AirForceSoldier } from '../module/MIL/Models';
 
 export async function findArmySoldier(soldier: ArmySoldierInterface) {
   const ml = new MilitaryLetter();

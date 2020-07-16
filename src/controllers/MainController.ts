@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface } from '../module/Models/Army';
-import { AirForceSoldierInterface } from '../module/Models';
+import { ArmySoldierInterface } from '../module/MIL/Models/Army';
+import { AirForceSoldierInterface } from '../module/MIL/Models';
 
 export let createArmySoldierValidator = [
   body('name').notEmpty(),
