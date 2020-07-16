@@ -6,7 +6,7 @@
   "scripts": {
     "start": "tsc && node dist/app.js",
     "dev": "nodemon --exec ./node_modules/.bin/ts-node ./src/index.ts",
-    "test": "jest"
+    "test": "NODE_ENV=test jest"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",
