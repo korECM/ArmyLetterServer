@@ -59,14 +59,14 @@ export async function createAirSoldier(soldier: AirForceSoldierInterface) {
   const soldierFromAirForce = await findAirForceSoldier(soldier);
 
   if (soldierFromAirForce) {
-    const { name, birthDate, enterDate, endDate, imageURL: image, soldierInfo: trainUnitEdNm } = soldierFromAirForce as AirForceSoldier;
-
+    const { name, birthDate: birthDateRaw, enterDate, endDate, imageURL: image, soldierInfo: trainUnitEdNm } = soldierFromAirForce as AirForceSoldier;
+    let birthDate = [birthDateRaw.substring(0, 4), birthDateRaw.substring(4, 6), birthDateRaw.substring(6)].join('-');
     let exSoldier = await AirForceSoldierModel.findOne({ name, birthDate, enterDate, trainUnitEdNm, endDate, image });
     if (exSoldier) return exSoldier;
 
     let dbSoldier = new AirForceSoldierModel({
       name,
-      birthDate: [birthDate.substring(0, 4), birthDate.substring(4, 6), birthDate.substring(6)].join('-'),
+      birthDate,
       enterDate,
       trainUnitEdNm,
       endDate,
