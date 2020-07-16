@@ -1,8 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface } from '../module/MIL/Models/Army';
-import { AirForceSoldierInterface } from '../module/MIL/Models';
+import { ArmySoldierInterface, ArmySoldier } from '../module/MIL/Models/Army';
+import { AirForceSoldierInterface, AirForceSoldier } from '../module/MIL/Models';
+import ArmySoldierModel from '../models/ArmySoldier';
+import AirForceSoldierModel from '../models/AirForceSoldier';
 
 export let createArmySoldierValidator = [
   body('name').notEmpty(),
@@ -13,7 +15,6 @@ export let createArmySoldierValidator = [
 ];
 
 export async function createArmySoldierProxy(req: Request, res: Response, next: NextFunction) {
-
   const soldier = await createArmySoldier(req.body);
 
   if (soldier == null) return res.status(404).send();
@@ -23,8 +24,25 @@ export async function createArmySoldierProxy(req: Request, res: Response, next: 
 
 export async function createArmySoldier(soldier: ArmySoldierInterface) {
   const soldierFromArmy = await findArmySoldier(soldier);
+  if (soldierFromArmy) {
+    const { name, birthDate, enterDate, endDate, trainUnitCdName: armyUnit, trainUnitEdNm } = soldierFromArmy as ArmySoldier;
 
-  return soldierFromArmy;
+    let exSoldier = await ArmySoldierModel.findOne({ name, birthDate, enterDate, armyUnit, trainUnitEdNm, endDate });
+    if (exSoldier) return exSoldier;
+
+    let dbSoldier = new ArmySoldierModel({
+      name,
+      birthDate,
+      enterDate,
+      armyUnit,
+      trainUnitEdNm,
+      endDate,
+    });
+    await dbSoldier.save();
+    return dbSoldier;
+  }
+
+  return null;
 }
 
 export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').notEmpty().isLength({ max: 8, min: 8 })];
@@ -39,5 +57,24 @@ export async function createAirSoldierProxy(req: Request, res: Response, next: N
 
 export async function createAirSoldier(soldier: AirForceSoldierInterface) {
   const soldierFromAirForce = await findAirForceSoldier(soldier);
+
+  if (soldierFromAirForce) {
+    const { name, birthDate, enterDate, endDate, imageURL: image, soldierInfo: trainUnitEdNm } = soldierFromAirForce as AirForceSoldier;
+
+    let exSoldier = await AirForceSoldierModel.findOne({ name, birthDate, enterDate, trainUnitEdNm, endDate, image });
+    if (exSoldier) return exSoldier;
+
+    let dbSoldier = new AirForceSoldierModel({
+      name,
+      birthDate: [birthDate.substring(0, 4), birthDate.substring(4, 6), birthDate.substring(6)].join('-'),
+      enterDate,
+      trainUnitEdNm,
+      endDate,
+      image,
+    });
+    await dbSoldier.save();
+    return dbSoldier;
+  }
+
   return soldierFromAirForce;
 }
