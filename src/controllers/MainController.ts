@@ -20,6 +20,8 @@ export async function createArmySoldierProxy(req: Request, res: Response, next: 
 
   const soldier = await createArmySoldier(req.body);
 
+  if (soldier == null) return res.status(404).send();
+
   return res.status(201).json(soldier);
 }
 

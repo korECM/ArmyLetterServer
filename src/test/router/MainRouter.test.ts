@@ -12,6 +12,19 @@ describe('MainRouter Test', () => {
       done();
     });
 
+    it('존재하지 않는 군인 정보가 주어지면 404 반환', async (done) => {
+      const response = await request(app).post('/main/army').send({
+        armyType: '육군',
+        armyUnit: '육군훈련소-논산',
+        enterDate: '2020-06-15',
+        birthDate: '1999-10-26',
+        name: '뷁뷀뤡',
+      });
+      expect(response.status).toEqual(404);
+
+      done();
+    });
+
     it('적절한 데이터가 주어져 군인을 찾는데 성공한다면 201 반환', async (done) => {
       const response = await request(app).post('/main/army').send({
         armyType: '육군',
