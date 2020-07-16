@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
 import { findArmySoldier } from '../services/FindSoldier';
 
-let createAirSoldierValidator = [
+let createArmySoldierValidator = [
   body('name').notEmpty(),
   body('armyType').notEmpty(),
   body('armyUnit').notEmpty(),
@@ -10,8 +10,7 @@ let createAirSoldierValidator = [
   body('enterDate').isDate(),
 ];
 
-export async function createAirSoldier(req: Request, res: Response, next: NextFunction) {
-
+export async function createArmySoldier(req: Request, res: Response, next: NextFunction) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     console.error(errors);
@@ -23,4 +22,4 @@ export async function createAirSoldier(req: Request, res: Response, next: NextFu
   res.send('Hello');
 }
 
-export { createAirSoldierValidator };
+export { createArmySoldierValidator };

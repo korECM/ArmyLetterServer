@@ -1,9 +1,9 @@
 import { Request, Response, Application } from 'express';
-import { createAirSoldier, createAirSoldierValidator } from '../controllers/MainController';
+import { createArmySoldier, createArmySoldierValidator } from '../controllers/MainController';
 
 export class Routes {
   public routes(app: Application): void {
-    app.route('/main/army').post(createAirSoldierValidator, createAirSoldier);
+    app.route('/main/army').post(createArmySoldierValidator, createArmySoldier);
 
     app.route('/').get((req: Request, res: Response) => {
       res.status(200).send({
