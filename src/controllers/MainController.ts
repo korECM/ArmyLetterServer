@@ -27,3 +27,20 @@ export async function createArmySoldier(soldier: ArmySoldierInterface) {
 
   return soldierFromArmy;
 }
+
+export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').isDate()];
+
+export async function createAirSoldierProxy(req: Request, res: Response, next: NextFunction) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).send();
+  }
+
+  await createAirSoldier();
+
+  return res.status(201).json();
+}
+
+export async function createAirSoldier() {
+  return null;
+}
