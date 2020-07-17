@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { SportsSchemaInterface } from './Sport';
+import { SportsSchemaInterface } from './Sports';
 
 export interface AirForceSchemaInterface extends mongoose.Document {
   name: string;
