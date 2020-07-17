@@ -11,13 +11,13 @@ export interface SportsSchemaInterface extends mongoose.Document {
 }
 
 export let SportsSchema = new Schema({
-  koreaBaseball: [String],
-  koreaBasketball: [String],
-  koreaSoccer: [String],
-  worldBaseball: [String],
-  worldBasketball: [String],
-  worldSoccer: [String],
-  esports: [String],
+  koreaBaseball: { type: [String], default: [] },
+  koreaBasketball: { type: [String], default: [] },
+  koreaSoccer: { type: [String], default: [] },
+  worldBaseball: { type: [String], default: [] },
+  worldBasketball: { type: [String], default: [] },
+  worldSoccer: { type: [String], default: [] },
+  esports: { type: [String], default: [] },
 });
 
 const Sports = mongoose.model<SportsSchemaInterface>('Sports', SportsSchema);
