@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { SportsSchemaInterface } from './Sports';
+import { LetterSchemaInterface } from './Letter';
 
 export interface AirForceSchemaInterface extends mongoose.Document {
   name: string;
@@ -9,6 +10,8 @@ export interface AirForceSchemaInterface extends mongoose.Document {
   trainUnitEdNm: string;
   endDate: string;
   sports: SportsSchemaInterface | null;
+  letters: LetterSchemaInterface[] | null;
+  corona: boolean;
   registerDate: Date;
 }
 
@@ -20,6 +23,8 @@ export let AirForceSchema = new Schema({
   trainUnitEdNm: String,
   endDate: String,
   sports: { type: mongoose.Schema.Types.ObjectId, ref: 'Sports' },
+  corona: { type: Boolean, default: false },
+  letters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Letter' }],
   registerDate: {
     type: Date,
     default: Date.now,

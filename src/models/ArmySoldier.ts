@@ -1,14 +1,18 @@
 import mongoose, { Schema } from 'mongoose';
 import { SportsSchemaInterface } from './Sports';
+import { LetterSchemaInterface } from './Letter';
+import { ArmyUnitTypeName } from '../module/MIL/Models/Army';
 
 export interface ArmySoldierSchemaInterface extends mongoose.Document {
   name: string;
   birthDate: string;
   enterDate: string;
-  armyUnit: string;
+  armyUnit: ArmyUnitTypeName;
   trainUnitEdNm: string;
   endDate: string;
   sports: SportsSchemaInterface | null;
+  letters: LetterSchemaInterface[] | null;
+  corona: boolean;
   registerDate: Date;
 }
 
@@ -20,6 +24,8 @@ export let ArmySoldierSchema = new Schema({
   trainUnitEdNm: String,
   endDate: String,
   sports: { type: mongoose.Schema.Types.ObjectId, ref: 'Sports' },
+  corona: { type: Boolean, default: false },
+  letters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Letter' }],
   registerDate: {
     type: Date,
     default: Date.now,

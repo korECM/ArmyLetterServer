@@ -5,7 +5,10 @@ import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
+import schedule from 'node-schedule';
+import { saveCoronaLetter } from './services/saveCoronaLetter';
 import { MyError } from './types';
+import { sendLetterToSoldiers } from './services/sendLetter';
 
 class App {
   public app: express.Application;
@@ -18,6 +21,8 @@ class App {
     this.config();
     this.routes.routes(this.app);
     this.errorHandler();
+    this.letterSchedule();
+    this.sendLetterSchedule();
   }
 
   private config() {
@@ -47,6 +52,24 @@ class App {
     };
 
     this.app.use(session(sessionOption));
+  }
+
+  private sendLetterSchedule() {
+    schedule.scheduleJob('0 22 * * *', async () => {
+      await sendLetterToSoldiers();
+    });
+    // schedule.scheduleJob('0 * * * * *', async () => {
+    //   await sendLetterToSoldiers();
+    // });
+  }
+
+  private letterSchedule() {
+    schedule.scheduleJob('0 21 * * *', async () => {
+      await saveCoronaLetter();
+    });
+    // schedule.scheduleJob('0 * * * * *', async () => {
+    //   await saveCoronaLetter();
+    // });
   }
 
   private errorHandler(): void {

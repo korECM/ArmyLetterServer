@@ -5,16 +5,14 @@ import { AirForceSchemaInterface } from './AirForceSoldier';
 export interface LetterSchemaInterface extends mongoose.Document {
   title: string;
   body: string;
-  airForceSoldier: AirForceSchemaInterface | null;
-  armySoldier: ArmySoldierSchemaInterface | null;
   registerDate: Date;
+  sended: boolean;
 }
 
 export let LetterSchema = new Schema({
   title: String,
   body: String,
-  airForceSoldier: { type: mongoose.Schema.Types.ObjectId, ref: 'AirForceSoldier' },
-  armySoldier: { type: mongoose.Schema.Types.ObjectId, ref: 'ArmySoldier' },
+  sended: { type: Boolean, default: false },
   registerDate: {
     type: Date,
     default: Date.now,
