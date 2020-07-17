@@ -1,9 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { param, query, validationResult } from 'express-validator';
+import { param, query } from 'express-validator';
 import { Types } from 'mongoose';
-import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface, ArmySoldier } from '../module/MIL/Models/Army';
-import { AirForceSoldierInterface, AirForceSoldier } from '../module/MIL/Models';
 import ArmySoldierModel from '../models/ArmySoldier';
 import AirForceSoldierModel from '../models/AirForceSoldier';
 
