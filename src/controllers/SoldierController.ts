@@ -27,7 +27,6 @@ export async function getSoldier(soldierID: string, soldierType: string) {
       return await getAirForceSoldier(soldierID);
     case 'army':
       return await getArmySoldier(soldierID);
-      break;
     default:
       return null;
   }
