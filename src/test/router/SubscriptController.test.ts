@@ -13,7 +13,7 @@ describe('SoldierRouter Test', () => {
     });
     it('적절한 ObjectID가 아니거나 군인이 존재하지 않으면 406 반환', async (done) => {
       const response = await request(app).post('/subscript/1234?type=army').send({
-        sports: [],
+        sports: {},
       });
       expect(response.status).toEqual(406);
 
@@ -22,7 +22,7 @@ describe('SoldierRouter Test', () => {
 
     it('적절한 데이터가 주어져 군인을 찾는데 성공한다면 200 반환', async (done) => {
       const response = await request(app).post('/subscript/5f10a790cf4c596dc45a659b?type=army').send({
-        sports: [],
+        sports: {},
       });
       expect(response.status).toEqual(200);
 
@@ -41,7 +41,7 @@ describe('SoldierRouter Test', () => {
     });
     it('적절한 ObjectID가 아니거나 군인이 존재하지 않으면 406 반환', async (done) => {
       const response = await request(app).post('/subscript/1234?type=airForce').send({
-        sports: [],
+        sports: {},
       });
       expect(response.status).toEqual(406);
 
@@ -50,7 +50,7 @@ describe('SoldierRouter Test', () => {
 
     it('적절한 데이터가 주어져 군인을 찾는데 성공한다면 200 반환', async (done) => {
       const response = await request(app).post('/subscript/5f10af798945fa01127412d6?type=airForce').send({
-        sports: [],
+        sports: {},
       });
       expect(response.status).toEqual(200);
 

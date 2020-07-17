@@ -11,7 +11,7 @@ export async function getSoldierProxy(req: Request, res: Response, next: NextFun
   if (!ObjectId.isValid(req.params.id!)) return res.status(406).send();
 
   const soldier = await getSoldier(req.params.id!, req.query.type as string);
-
+  console.log(soldier);
   if (!soldier) return res.status(406).send();
 
   return res.status(200).json(soldier);
