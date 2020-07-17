@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query } from 'express-validator';
 import { Types } from 'mongoose';
-import ArmySoldierModel from '../models/ArmySoldier';
-import AirForceSoldierModel from '../models/AirForceSoldier';
+import { getAirForceSoldier, getArmySoldier } from '../services/GetSoldierFromDB';
 
 let { ObjectId } = Types;
 
@@ -29,14 +28,4 @@ export async function getSoldier(soldierID: string, soldierType: string) {
   }
 
   return null;
-}
-
-async function getArmySoldier(soldierID: string) {
-  let soldier = await ArmySoldierModel.findOne({ _id: soldierID }).exec();
-  return soldier;
-}
-
-async function getAirForceSoldier(soldierID: string) {
-  let soldier = await AirForceSoldierModel.findOne({ _id: soldierID }).exec();
-  return soldier;
 }
