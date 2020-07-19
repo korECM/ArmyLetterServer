@@ -21,6 +21,7 @@ export interface SubscriptionRequestInterface {
     worldSoccer: string[];
     esports: string[];
   };
+  news: string[];
 }
 
 export let postSubValidator = [param('id').notEmpty(), query('type').notEmpty().isIn(['airForce', 'army']), body('sports').notEmpty()];
@@ -38,11 +39,17 @@ export async function postSubscription(soldierID: string, soldierType: string, s
 
   if (soldier === null) return null;
 
-  console.log(soldier);
-
   await updateSportsInformation(soldier, subscription);
 
+  await updateNewsInformation(soldier, subscription);
+
   await saveSoldier(soldier, soldierType);
+}
+
+export async function updateNewsInformation(soldier: AirForceSchemaInterface | ArmySoldierSchemaInterface, subscription: SubscriptionRequestInterface) {
+  const { news } = subscription;
+
+  soldier.news = news;
 }
 
 export async function updateSportsInformation(soldier: AirForceSchemaInterface | ArmySoldierSchemaInterface, subscription: SubscriptionRequestInterface) {
@@ -50,6 +57,7 @@ export async function updateSportsInformation(soldier: AirForceSchemaInterface |
 
   // undefined or null
   if (!soldier.sports) {
+    console.log('군인 Sports 정보 없음');
     sports = new Sports();
     soldier.sports = sports._id;
   } else {

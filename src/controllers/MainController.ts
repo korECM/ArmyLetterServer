@@ -37,6 +37,7 @@ export async function createArmySoldier(soldier: ArmySoldierInterface) {
       armyUnit,
       trainUnitEdNm,
       endDate,
+      letters: [],
     });
     await dbSoldier.save();
     return dbSoldier;
@@ -71,6 +72,7 @@ export async function createAirSoldier(soldier: AirForceSoldierInterface) {
       trainUnitEdNm,
       endDate,
       image,
+      letters: [],
     });
     await dbSoldier.save();
     return dbSoldier;

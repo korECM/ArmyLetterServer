@@ -9,6 +9,7 @@ import schedule from 'node-schedule';
 import { saveCoronaLetter } from './services/saveCoronaLetter';
 import { MyError } from './types';
 import { sendLetterToSoldiers } from './services/sendLetter';
+import { saveNewsLetter } from './services/SaveNewsLetter';
 
 class App {
   public app: express.Application;
@@ -58,7 +59,7 @@ class App {
     schedule.scheduleJob('0 22 * * *', async () => {
       await sendLetterToSoldiers();
     });
-    // schedule.scheduleJob('0 * * * * *', async () => {
+    // schedule.scheduleJob('30 * * * * *', async () => {
     //   await sendLetterToSoldiers();
     // });
   }
@@ -67,6 +68,15 @@ class App {
     schedule.scheduleJob('0 21 * * *', async () => {
       await saveCoronaLetter();
     });
+
+    schedule.scheduleJob('0 21 * * *', async () => {
+      await saveNewsLetter();
+    });
+
+    // schedule.scheduleJob('0 * * * * *', async () => {
+    //   await saveNewsLetter();
+    // });
+
     // schedule.scheduleJob('0 * * * * *', async () => {
     //   await saveCoronaLetter();
     // });

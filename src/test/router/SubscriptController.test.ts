@@ -6,7 +6,7 @@ describe('SoldierRouter Test', () => {
     it('body에 적절한 내용 없으면 400 반환', async (done) => {
       // TODO: 각 항목 별로 테스트
 
-      const response = await request(app).post('/subscript/5f10a790cf4c596dc45a659b?type=army').send();
+      const response = await request(app).post('/subscript/5f146ae09113064a9f7ed941?type=army').send();
       expect(response.status).toEqual(400);
 
       done();
@@ -21,7 +21,7 @@ describe('SoldierRouter Test', () => {
     });
 
     it('적절한 데이터가 주어져 군인을 찾는데 성공한다면 200 반환', async (done) => {
-      const response = await request(app).post('/subscript/5f10a790cf4c596dc45a659b?type=army').send({
+      const response = await request(app).post('/subscript/5f146ae09113064a9f7ed941?type=army').send({
         sports: {},
       });
       expect(response.status).toEqual(200);
@@ -34,7 +34,7 @@ describe('SoldierRouter Test', () => {
     it('body에 적절한 내용 없으면 400 반환', async (done) => {
       // TODO: 각 항목 별로 테스트
 
-      const response = await request(app).post('/subscript/5f10af798945fa01127412d6?type=airForce').send();
+      const response = await request(app).post('/subscript/5f145c849c9a485684030673?type=airForce').send();
       expect(response.status).toEqual(400);
 
       done();
@@ -49,7 +49,7 @@ describe('SoldierRouter Test', () => {
     });
 
     it('적절한 데이터가 주어져 군인을 찾는데 성공한다면 200 반환', async (done) => {
-      const response = await request(app).post('/subscript/5f10af798945fa01127412d6?type=airForce').send({
+      const response = await request(app).post('/subscript/5f145c849c9a485684030673?type=airForce').send({
         sports: {},
       });
       expect(response.status).toEqual(200);

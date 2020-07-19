@@ -12,7 +12,7 @@ export async function sendArmySoldierLetter(soldier: ArmySoldierInterface, lette
       soldierType: '예비군인/훈련병',
     });
 
-    await ml.updateNickname('윤종원.');
+    await ml.updateNickname('인편 대행 서비스');
 
     await ml.setSoldier(targetSoldier);
 
@@ -34,7 +34,7 @@ export async function findArmySoldier(soldier: ArmySoldierInterface) {
       soldierType: '예비군인/훈련병',
     });
 
-    await ml.updateNickname('윤종원.');
+    await ml.updateNickname('인편 대행 서비스');
 
     await ml.setSoldier(targetSoldier);
 

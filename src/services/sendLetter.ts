@@ -1,4 +1,4 @@
-import Letter from '../models/Letter';
+import Letter, { LetterSchemaInterface } from '../models/Letter';
 import ArmySoldier from '../models/ArmySoldier';
 import AirForceSoldier from '../models/AirForceSoldier';
 import { findArmySoldier, sendArmySoldierLetter } from './FindSoldier';
@@ -8,14 +8,14 @@ export async function sendLetterToSoldiers() {
   console.log('편지 전송 시작');
 
   try {
-    let armySoldier = await ArmySoldier.find({ corona: true }).populate('letters').exec();
+    let armySoldier = await ArmySoldier.find().populate('letters').exec();
 
     console.log(armySoldier);
 
     armySoldier.forEach(async (soldier) => {
       console.log(`${soldier.name} 편지 전송 시작`);
-      soldier.letters
-        ?.filter((letter) => letter.sended === false)
+      (soldier.letters as LetterSchemaInterface[])
+        .filter((letter) => letter.sended === false)
         .forEach(async (letter) => {
           console.log(`${letter.title} 전송 시작`);
           await sendArmySoldierLetter(
@@ -37,6 +37,7 @@ export async function sendLetterToSoldiers() {
       console.log(`${soldier.name} 편지 전송 끝`);
     });
 
+    // TODO: 공군 전송 기능
     let airForceSoldier = await AirForceSoldier.find({ corona: true }).populate('letters').exec();
 
     airForceSoldier.forEach(async (soldier) => {});
