@@ -10,7 +10,8 @@ export interface AirForceSchemaInterface extends mongoose.Document {
   trainUnitEdNm: string;
   endDate: string;
   sports: SportsSchemaInterface | null;
-  letters: LetterSchemaInterface[] | null;
+  letters: LetterSchemaInterface[] | string[];
+  news: string[];
   corona: boolean;
   registerDate: Date;
 }
@@ -24,6 +25,7 @@ export let AirForceSchema = new Schema({
   endDate: String,
   sports: { type: mongoose.Schema.Types.ObjectId, ref: 'Sports' },
   corona: { type: Boolean, default: false },
+  news: { type: [String], default: [] },
   letters: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Letter' }],
   registerDate: {
     type: Date,
