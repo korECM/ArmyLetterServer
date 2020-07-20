@@ -3,7 +3,7 @@ import Letter from '../models/Letter';
 export async function deleteOldLetters() {
   let date = new Date();
 
-  date.setDate(date.getMonth() - 1);
+  date.setMonth(date.getMonth() - 1);
 
   try {
     console.log('오래된 편지 삭제 시작');
