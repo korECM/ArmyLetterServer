@@ -10,6 +10,7 @@ import { saveCoronaLetter } from './services/saveCoronaLetter';
 import { MyError } from './types';
 import { sendLetterToSoldiers } from './services/sendLetter';
 import { saveNewsLetter } from './services/SaveNewsLetter';
+import { deleteOldLetters } from './services/DeleteOldLetters';
 
 class App {
   public app: express.Application;
@@ -24,6 +25,7 @@ class App {
     this.errorHandler();
     this.letterSchedule();
     this.sendLetterSchedule();
+    this.deletePreviousLetters();
   }
 
   private config() {
@@ -53,6 +55,12 @@ class App {
     };
 
     this.app.use(session(sessionOption));
+  }
+
+  private deletePreviousLetters() {
+    schedule.scheduleJob('0 20 * * *', async () => {
+      await deleteOldLetters();
+    });
   }
 
   private sendLetterSchedule() {
