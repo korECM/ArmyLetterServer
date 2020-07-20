@@ -8,7 +8,7 @@ import path from 'path';
 import schedule from 'node-schedule';
 import { saveCoronaLetter } from './services/saveCoronaLetter';
 import { MyError } from './types';
-import { sendLetterToSoldiers } from './services/sendLetter';
+import { sendLetterInDBToSoldiers } from './services/sendLetter';
 import { saveNewsLetter } from './services/SaveNewsLetter';
 import { deleteOldLetters } from './services/DeleteOldLetters';
 
@@ -65,7 +65,7 @@ class App {
 
   private sendLetterSchedule() {
     schedule.scheduleJob('0 22 * * *', async () => {
-      await sendLetterToSoldiers();
+      await sendLetterInDBToSoldiers();
     });
     // schedule.scheduleJob('30 * * * * *', async () => {
     //   await sendLetterToSoldiers();

@@ -4,7 +4,7 @@ import AirForceSoldier from '../models/AirForceSoldier';
 import { findArmySoldier, sendArmySoldierLetter } from './FindSoldier';
 import { ArmyLetter } from '../module/MIL/Models';
 
-export async function sendLetterToSoldiers() {
+export async function sendLetterInDBToSoldiers() {
   console.log('편지 전송 시작');
 
   try {
