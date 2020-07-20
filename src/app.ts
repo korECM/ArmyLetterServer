@@ -61,6 +61,8 @@ class App {
     schedule.scheduleJob('0 20 * * *', async () => {
       await deleteOldLetters();
     });
+
+    // deleteOldLetters();
   }
 
   private sendLetterSchedule() {
@@ -68,7 +70,7 @@ class App {
       await sendLetterInDBToSoldiers();
     });
     // schedule.scheduleJob('30 * * * * *', async () => {
-    //   await sendLetterToSoldiers();
+    //   await sendLetterInDBToSoldiers();
     // });
   }
 
