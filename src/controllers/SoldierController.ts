@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query } from 'express-validator';
 import { Types } from 'mongoose';
-import { getAirForceSoldier, getArmySoldier } from '../services/GetSoldierFromDB';
+import { getAirForceSoldierWithLetters, getArmySoldierWithLetters } from '../services/GetSoldierFromDB';
 
 let { ObjectId } = Types;
 
@@ -20,9 +20,9 @@ export async function getSoldierProxy(req: Request, res: Response, next: NextFun
 export async function getSoldier(soldierID: string, soldierType: string) {
   switch (soldierType) {
     case 'airForce':
-      return await getAirForceSoldier(soldierID);
+      return await getAirForceSoldierWithLetters(soldierID);
     case 'army':
-      return await getArmySoldier(soldierID);
+      return await getArmySoldierWithLetters(soldierID);
     default:
       return null;
   }
