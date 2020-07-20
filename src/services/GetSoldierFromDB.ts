@@ -21,3 +21,13 @@ export async function getAirForceSoldierWithSports(soldierID: string) {
   let soldier = await AirForceSoldierModel.findOne({ _id: soldierID }).populate('sports').exec();
   return soldier;
 }
+
+export async function getArmySoldierWithLetters(soldierID: string) {
+  let soldier = await ArmySoldierModel.findOne({ _id: soldierID }).populate('letters').exec();
+  return soldier;
+}
+
+export async function getAirForceSoldierWithLetters(soldierID: string) {
+  let soldier = await AirForceSoldierModel.findOne({ _id: soldierID }).populate('letters').exec();
+  return soldier;
+}
