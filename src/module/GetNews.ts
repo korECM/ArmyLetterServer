@@ -2,6 +2,7 @@ import util from 'util';
 import cheerio from 'cheerio';
 import request from 'request-promise';
 import { parseString } from 'xml2js';
+import rssParser from 'rss-parser';
 
 interface NewsInterface {
   title: string;
@@ -159,4 +160,44 @@ async function News(category: NewsCategory): Promise<NewsResultInterface> {
   }
 }
 
-export { News, NewsCategory, NewsDataCategory };
+async function getSimpleNews(category: NewsCategory) {
+  const parser = new rssParser();
+  let xml = `http://media.daum.net/rss/today/primary/${category}/rss2.xml`;
+  let message: string = '';
+
+  const convertor = (text: string | undefined) => {
+    return (text || '')
+      .replace(/&quot;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>');
+  };
+
+  const feed = await parser.parseURL(xml);
+
+  feed.items!.forEach((item) => {
+    const title = convertor(item.title);
+    let content = convertor(item.content);
+
+    if (content.startsWith('(끝)본 기사는 인포맥스 금융정보 단말기에서 2시간 더 빠른')) {
+      content = '';
+    } else {
+      content = content.slice(0, content.lastIndexOf('다.') + 1);
+      content = content
+        .replace(/^\[[가-힣=, ]*\]/g, '')
+        .replace(/\[KBS\s[가-힣]{2}\]/g, '')
+        .replace(/\[앵커\]/g, '')
+        .replace(/\[[가-힣·]+=[가-힣0-9]+\]/g, '')
+        .replace(/\([가-힣·]+=[가-힣0-9]+\)/g, '')
+        .replace(/[가-힣]+ (기자|특파원|인턴기자) ?(=|,| )/g, '')
+        .trim();
+      content += '\n';
+    }
+
+    message = `${message}\n# ${title}\n${content}`;
+  });
+
+  return message;
+}
+
+export { News, NewsCategory, NewsDataCategory, getSimpleNews };

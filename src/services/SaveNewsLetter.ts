@@ -1,4 +1,4 @@
-import { News, NewsCategory } from '../module/GetNews';
+import { News, NewsCategory, getSimpleNews } from '../module/GetNews';
 import ArmySoldier from '../models/ArmySoldier';
 import AirForceSoldier from '../models/AirForceSoldier';
 import db from '../DB';
@@ -20,15 +20,15 @@ export async function saveNewsLetter() {
   console.log('News 저장 시작');
 
   try {
-    await saveNewsLetterWithCategory('all');
-    await saveNewsLetterWithCategory('culture');
-    await saveNewsLetterWithCategory('digital');
-    await saveNewsLetterWithCategory('economic');
-    await saveNewsLetterWithCategory('entertain');
-    await saveNewsLetterWithCategory('foreign');
-    await saveNewsLetterWithCategory('politics');
-    await saveNewsLetterWithCategory('society');
-    await saveNewsLetterWithCategory('sports');
+    await saveSimpleNewsLetterWithCategory('all');
+    await saveSimpleNewsLetterWithCategory('culture');
+    await saveSimpleNewsLetterWithCategory('digital');
+    await saveSimpleNewsLetterWithCategory('economic');
+    await saveSimpleNewsLetterWithCategory('entertain');
+    await saveSimpleNewsLetterWithCategory('foreign');
+    await saveSimpleNewsLetterWithCategory('politics');
+    await saveSimpleNewsLetterWithCategory('society');
+    await saveSimpleNewsLetterWithCategory('sports');
   } catch (error) {
     console.error(error);
   }
@@ -38,6 +38,11 @@ export async function saveNewsLetter() {
 async function saveNewsLetterWithCategory(category: NewsCategory) {
   let news = await getNewsContentWithCategory(category);
   await saveNewsWithSoldier(category, news);
+}
+
+async function saveSimpleNewsLetterWithCategory(category: NewsCategory) {
+  let news = await getSimpleNewsContentWithCategory(category);
+  await saveSimpleNewsWithSoldier(category, news);
 }
 
 async function getNewsContentWithCategory(category: NewsCategory) {
@@ -53,6 +58,38 @@ async function getNewsContentWithCategory(category: NewsCategory) {
   });
 
   return newsItems;
+}
+
+async function getSimpleNewsContentWithCategory(category: NewsCategory) {
+  return await getSimpleNews(category);
+}
+
+async function saveSimpleNewsWithSoldier(category: NewsCategory, newsContents: string) {
+  let date = new Date();
+  let armySoldiers = await ArmySoldier.find({ news: category });
+  let airForceSoldiers = await AirForceSoldier.find({ news: category });
+
+  let letter = new Letter({
+    title: `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 ${newsName[category]} 뉴스`,
+    body: newsContents,
+  });
+  await letter.save();
+
+  await Promise.all(
+    armySoldiers.map(async (soldier) => {
+      if (!soldier.letters) soldier.letters = [];
+      soldier.letters.push(letter._id);
+      await soldier.save();
+    }),
+  );
+
+  await Promise.all(
+    airForceSoldiers.map(async (soldier) => {
+      if (!soldier.letters) soldier.letters = [];
+      soldier.letters.push(letter._id);
+      await soldier.save();
+    }),
+  );
 }
 
 interface NewsItem {
