@@ -1,5 +1,5 @@
 import { News, NewsCategory, getSimpleNews } from '../module/GetNews';
-import ArmySoldier from '../models/ArmySoldier';
+import ArmySoldierMIL from '../models/ArmySoldier';
 import AirForceSoldier from '../models/AirForceSoldier';
 import db from '../DB';
 import Letter from '../models/Letter';
@@ -66,7 +66,7 @@ async function getSimpleNewsContentWithCategory(category: NewsCategory) {
 
 async function saveSimpleNewsWithSoldier(category: NewsCategory, newsContents: string) {
   let date = new Date();
-  let armySoldiers = await ArmySoldier.find({ news: category });
+  let armySoldiers = await ArmySoldierMIL.find({ news: category });
   let airForceSoldiers = await AirForceSoldier.find({ news: category });
 
   let letter = new Letter({
@@ -99,7 +99,7 @@ interface NewsItem {
 
 async function saveNewsWithSoldier(category: NewsCategory, newsContents: NewsItem[]) {
   let date = new Date();
-  let armySoldiers = await ArmySoldier.find({ news: category });
+  let armySoldiers = await ArmySoldierMIL.find({ news: category });
   let airForceSoldiers = await AirForceSoldier.find({ news: category });
 
   for (const news of newsContents) {

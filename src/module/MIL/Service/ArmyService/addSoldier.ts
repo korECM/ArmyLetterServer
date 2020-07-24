@@ -1,8 +1,8 @@
-import { ArmySoldier, Cookie } from '../../Models';
+import { ArmySoldierMIL, Cookie } from '../../Models';
 import requestPromise from 'request-promise';
 import { addCookie, checkDate } from '../../Utils';
 
-async function addSoldier(soldier: ArmySoldier, cookie: Cookie) {
+async function addSoldier(soldier: ArmySoldierMIL, cookie: Cookie) {
   if (!soldier) {
     throw new Error('유효하지 않은 군인 정보입니다');
   }

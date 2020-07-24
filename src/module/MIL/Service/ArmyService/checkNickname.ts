@@ -1,4 +1,4 @@
-import { ArmySoldier, Cookie } from "../../Models";
+import { ArmySoldierMIL, Cookie } from "../../Models";
 import requestPromise from "request-promise";
 import { addCookie } from "../../Utils";
 

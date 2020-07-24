@@ -2,12 +2,12 @@ import { addSoldier, login, createCafeCheck, sendLetter, deleteSoldier, getProfi
 
 import { getSoldierList, getSessionId, AirForceSendLetter } from './AirForceService';
 
-import { ArmySoldier, Cookie, ArmyLetter, AirForceSoldier, AirForceLetter } from '../Models';
+import { ArmySoldierMIL, Cookie, ArmyLetter, AirForceSoldier, AirForceLetter } from '../Models';
 import { checkEmail } from '../Utils';
 import { updateNickname } from './ArmyService/updateNickname';
 
 class MilitaryLetter {
-  private soldier: ArmySoldier | AirForceSoldier | null = null;
+  private soldier: ArmySoldierMIL | AirForceSoldier | null = null;
   private tempSoldierList: AirForceSoldier[] = [];
   private profileSeq?: number;
   private isLogin: boolean = false;
@@ -41,16 +41,16 @@ class MilitaryLetter {
   }
 
   /**
-   * @param {(ArmySoldier | AirForceSoldier)} soldier 설정할 군인입니다.
+   * @param {(ArmySoldierMIL | AirForceSoldier)} soldier 설정할 군인입니다.
    * @param {number} [selectNum=0] 해당 정보와 일치하는 훈련병이 여러명인 경우 한명을 선택하는 인덱스입니다. 기본값은 0입니다.
    * @memberof MilitaryLetter
    */
-  public async setSoldier(soldier: ArmySoldier | AirForceSoldier, selectNum: number = 0) {
+  public async setSoldier(soldier: ArmySoldierMIL | AirForceSoldier, selectNum: number = 0) {
     if (soldier === undefined || soldier === null) {
       throw new Error('군인이 제대로 전달되지 않았습니다');
     }
     this.soldier = soldier;
-    if (this.soldier instanceof ArmySoldier) {
+    if (this.soldier instanceof ArmySoldierMIL) {
       this.checkLogin();
       try {
         await addSoldier(this.soldier!, this.cookie!);
@@ -101,7 +101,7 @@ class MilitaryLetter {
   public async sendLetter(letter: ArmyLetter | ArmyLetter[] | AirForceLetter | AirForceLetter[]) {
     this.checkReady();
     //TODO: Letter 잘못주면 어케 되는지 테스트 필요
-    if (this.soldier instanceof ArmySoldier) {
+    if (this.soldier instanceof ArmySoldierMIL) {
       let arrayLetter: ArmyLetter[];
       if (!(<ArmyLetter[]>letter).length) {
         arrayLetter = [<ArmyLetter>letter];
@@ -118,7 +118,7 @@ class MilitaryLetter {
         }
         letters.push(new ArmyLetter(letter.title + (count === 0 ? '' : ' - ' + (count + 1).toString()), letter.body));
         letters.map(async (realLetter) => {
-          await sendLetter(this.soldier! as ArmySoldier, this.cookie!, realLetter);
+          await sendLetter(this.soldier! as ArmySoldierMIL, this.cookie!, realLetter);
         });
       });
     } else if (this.soldier instanceof AirForceSoldier) {
@@ -170,10 +170,10 @@ class MilitaryLetter {
    * 설정한 군인을 반환하는 함수입니다.
    *
    * 군인을 설정하지 않은 경우 null을 반환합니다
-   * @returns {(ArmySoldier | AirForceSoldier | null)}
+   * @returns {(ArmySoldierMIL | AirForceSoldier | null)}
    * @memberof MilitaryLetter
    */
-  public getSoldier(): ArmySoldier | AirForceSoldier | null {
+  public getSoldier(): ArmySoldierMIL | AirForceSoldier | null {
     return this.soldier;
   }
   /**
@@ -185,7 +185,7 @@ class MilitaryLetter {
    */
   public getTrainUnitEduName(): string {
     this.checkSoldierSet();
-    if (this.soldier instanceof ArmySoldier) {
+    if (this.soldier instanceof ArmySoldierMIL) {
       return this.soldier!.trainUnitEdNm!;
     } else if (this.soldier instanceof AirForceSoldier) {
       return this.soldier!.soldierInfo!;
@@ -225,7 +225,7 @@ class MilitaryLetter {
   }
 
   private checkReady() {
-    if (this.soldier instanceof ArmySoldier) {
+    if (this.soldier instanceof ArmySoldierMIL) {
       this.checkLogin();
     } else if (this.soldier instanceof AirForceSoldier) {
       this.checkAirForceReady();
@@ -234,4 +234,4 @@ class MilitaryLetter {
 }
 
 export { MilitaryLetter };
-export { AirForceSoldier, ArmySoldier, AirForceLetter, ArmyLetter } from '../Models';
+export { AirForceSoldier, ArmySoldierMIL as ArmySoldier, AirForceLetter, ArmyLetter } from '../Models';

@@ -210,4 +210,4 @@ class ArmySoldier {
   //   }
 }
 
-export { ArmySoldier };
+export { ArmySoldier as ArmySoldierMIL };

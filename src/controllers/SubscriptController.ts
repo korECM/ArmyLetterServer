@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query, body } from 'express-validator';
 import { Types } from 'mongoose';
-import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface, ArmySoldier } from '../module/MIL/Models/Army';
+import { ArmySoldierInterface, ArmySoldierMIL } from '../module/MIL/Models/Army';
 import ArmySoldierModel, { ArmySoldierSchemaInterface } from '../models/ArmySoldier';
 import AirForceSoldierModel, { AirForceSchemaInterface } from '../models/AirForceSoldier';
 import { getAirForceSoldier, getArmySoldier, getAirForceSoldierWithSports, getArmySoldierWithSports } from '../services/GetSoldierFromDB';

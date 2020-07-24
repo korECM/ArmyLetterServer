@@ -1,6 +1,6 @@
 import request from 'request-promise';
 import Letter from '../models/Letter';
-import ArmySoldier from '../models/ArmySoldier';
+import ArmySoldierMIL from '../models/ArmySoldier';
 import AirForceSoldier from '../models/AirForceSoldier';
 
 export async function getCoronaInfo() {
@@ -57,7 +57,7 @@ export async function saveCoronaLetter() {
 
       await letter.save();
 
-      let armySoldier = await ArmySoldier.find({ corona: true }).exec();
+      let armySoldier = await ArmySoldierMIL.find({ corona: true }).exec();
 
       armySoldier.forEach(async (soldier) => {
         if (!soldier.letters) soldier.letters = [];
