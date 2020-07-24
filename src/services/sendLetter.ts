@@ -1,11 +1,10 @@
 import Letter, { LetterSchemaInterface } from '../models/Letter';
 import ArmySoldier from '../models/ArmySoldier';
 import AirForceSoldier from '../models/AirForceSoldier';
-import { findArmySoldier } from './FindSoldier';
 import {
   ArmyLetter,
   ArmySoldierInterface,
-  ArmySoldier as ArmySoldierMIL,
+  ArmySoldierMIL,
   AirForceSoldierInterface,
   AirForceLetter,
   AirForceSoldier as AirForceSoldierMIL,

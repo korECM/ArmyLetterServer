@@ -1,8 +1,8 @@
-import { ArmySoldier, Cookie } from "../../Models";
+import { ArmySoldierMIL, Cookie } from "../../Models";
 import requestPromise from "request-promise";
 import { addCookie } from "../../Utils";
 
-async function deleteSoldier(soldier: ArmySoldier, cookie: Cookie) {
+async function deleteSoldier(soldier: ArmySoldierMIL, cookie: Cookie) {
   if (!soldier) {
   }
   if (!cookie || !cookie.iuid || !cookie.token) {

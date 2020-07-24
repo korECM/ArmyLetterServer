@@ -1,8 +1,8 @@
-import { ArmySoldier, Cookie } from '../../Models';
+import { ArmySoldierMIL, Cookie } from '../../Models';
 import requestPromise from 'request-promise';
 import { addCookie } from '../../Utils';
 
-const createCafeCheck = async (soldier: ArmySoldier, cookie: Cookie) => {
+const createCafeCheck = async (soldier: ArmySoldierMIL, cookie: Cookie) => {
   if (!soldier) {
   }
   if (!cookie || !cookie.iuid || !cookie.token) {

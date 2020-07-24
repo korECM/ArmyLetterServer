@@ -1,10 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { body, validationResult } from 'express-validator';
-import { findArmySoldier, findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface, ArmySoldier } from '../module/MIL/Models/Army';
+import { findAirForceSoldier } from '../services/FindSoldier';
+import { ArmySoldierInterface, ArmySoldierMIL } from '../module/MIL/Models/Army';
 import { AirForceSoldierInterface, AirForceSoldier } from '../module/MIL/Models';
 import ArmySoldierModel from '../models/ArmySoldier';
 import AirForceSoldierModel from '../models/AirForceSoldier';
+import { ArmySoldierService } from '../services/Soldier/ArmySoldierService';
 
 export let createArmySoldierValidator = [
   body('name').notEmpty(),
@@ -15,36 +16,38 @@ export let createArmySoldierValidator = [
 ];
 
 export async function createArmySoldierProxy(req: Request, res: Response, next: NextFunction) {
-  const soldier = await createArmySoldier(req.body);
+  // const soldier = await createArmySoldier(req.body);
+  let soldierController = new ArmySoldierService();
+  const soldier = await soldierController.createSoldier(req.body);
 
   if (soldier == null) return res.status(404).send();
 
   return res.status(201).json(soldier);
 }
 
-export async function createArmySoldier(soldier: ArmySoldierInterface) {
-  const soldierFromArmy = await findArmySoldier(soldier);
-  if (soldierFromArmy) {
-    const { name, birthDate, enterDate, endDate, trainUnitCdName: armyUnit, trainUnitEdNm } = soldierFromArmy as ArmySoldier;
+// export async function createArmySoldier(soldier: ArmySoldierInterface) {
+//   const soldierFromArmy = await findArmySoldier(soldier);
+//   if (soldierFromArmy) {
+//     const { name, birthDate, enterDate, endDate, trainUnitCdName: armyUnit, trainUnitEdNm } = soldierFromArmy as ArmySoldierMIL;
 
-    let exSoldier = await ArmySoldierModel.findOne({ name, birthDate, enterDate, armyUnit, trainUnitEdNm, endDate });
-    if (exSoldier) return exSoldier;
+//     let exSoldier = await ArmySoldierModel.findOne({ name, birthDate, enterDate, armyUnit, trainUnitEdNm, endDate });
+//     if (exSoldier) return exSoldier;
 
-    let dbSoldier = new ArmySoldierModel({
-      name,
-      birthDate,
-      enterDate,
-      armyUnit,
-      trainUnitEdNm,
-      endDate,
-      letters: [],
-    });
-    await dbSoldier.save();
-    return dbSoldier;
-  }
+//     let dbSoldier = new ArmySoldierModel({
+//       name,
+//       birthDate,
+//       enterDate,
+//       armyUnit,
+//       trainUnitEdNm,
+//       endDate,
+//       letters: [],
+//     });
+//     await dbSoldier.save();
+//     return dbSoldier;
+//   }
 
-  return null;
-}
+//   return null;
+// }
 
 export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').notEmpty().isLength({ max: 8, min: 8 })];
 

@@ -1,9 +1,9 @@
-import { ArmySoldier, Cookie, ArmyLetter } from "../../Models";
+import { ArmySoldierMIL, Cookie, ArmyLetter } from "../../Models";
 import requestPromise from "request-promise";
 import { addCookie } from "../../Utils";
 
 const sendLetter = async (
-  soldier: ArmySoldier,
+  soldier: ArmySoldierMIL,
   cookie: Cookie,
   content: ArmyLetter
 ) => {

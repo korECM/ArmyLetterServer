@@ -3,7 +3,7 @@ import { SportsSchemaInterface } from './Sports';
 import { LetterSchemaInterface } from './Letter';
 import { ArmyUnitTypeName } from '../module/MIL/Models/Army';
 
-export interface ArmySoldierSchemaInterface extends mongoose.Document {
+export interface ArmySoldierSchemaColumnsInterface {
   name: string;
   birthDate: string;
   enterDate: string;
@@ -16,6 +16,8 @@ export interface ArmySoldierSchemaInterface extends mongoose.Document {
   corona: boolean;
   registerDate: Date;
 }
+
+export interface ArmySoldierSchemaInterface extends mongoose.Document, ArmySoldierSchemaColumnsInterface {}
 
 export let ArmySoldierSchema = new Schema({
   name: String,
@@ -36,3 +38,30 @@ export let ArmySoldierSchema = new Schema({
 
 const ArmySoldier = mongoose.model<ArmySoldierSchemaInterface>('ArmySoldier', ArmySoldierSchema);
 export default ArmySoldier;
+
+export interface ArmySoldierDBInterface {
+  findByID(id: string): Promise<ArmySoldierSchemaColumnsInterface | null>;
+  create(data: ArmySoldierDBCreateInterface): Promise<void>;
+}
+
+interface ArmySoldierDBCreateInterface {
+  name: string;
+  birthDate: string;
+  enterDate: string;
+  armyUnit: string;
+  trainUnitEdNm: string;
+  endDate: string;
+  letters: string[];
+}
+export class ArmySoldierDB implements ArmySoldierDBInterface {
+  constructor() {}
+
+  async findByID(id: string) {
+    return (await ArmySoldier.findOne({ _id: id }).exec()) as ArmySoldierSchemaColumnsInterface;
+  }
+
+  async create(data: ArmySoldierDBCreateInterface) {
+    let soldier = new ArmySoldier(data);
+    await soldier.save();
+  }
+}
