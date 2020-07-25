@@ -1,4 +1,4 @@
-import { SoldierService, MILLetterInterface } from './SoldierService';
+import { SoldierService, MILLetterInterface, SubscriptionRequestInterface } from './SoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierDBInterface, ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } from '../../module/MIL/Models';
@@ -8,6 +8,14 @@ import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 export class ArmySoldierService extends SoldierService {
   constructor(private ArmySoldierDBModel: ArmySoldierDBInterface = new ArmySoldierDB()) {
     super();
+  }
+
+  private async getDBSoldierBetweenModelAndId(soldier: ArmySoldierSchemaColumnsInterface | string) {
+    if (typeof soldier === 'string') {
+      return await this.getDBSoldierById(soldier);
+    } else {
+      return soldier;
+    }
   }
 
   async getDBSoldierById(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
@@ -55,12 +63,7 @@ export class ArmySoldierService extends SoldierService {
   }
 
   async getMILSoldierByDBSoldier(soldier: ArmySoldierSchemaColumnsInterface | string): Promise<ArmySoldierMIL | null> {
-    let soldierModel: ArmySoldierSchemaColumnsInterface | null = null;
-    if (typeof soldier === 'string') {
-      soldierModel = await this.getDBSoldierById(soldier);
-    } else {
-      soldierModel = soldier;
-    }
+    let soldierModel: ArmySoldierSchemaColumnsInterface | null = await this.getDBSoldierBetweenModelAndId(soldier);
 
     if (soldierModel === null) return null;
 
@@ -100,12 +103,7 @@ export class ArmySoldierService extends SoldierService {
 
   async sendLetter(soldier: string | ArmySoldierSchemaColumnsInterface, letter: MILLetterInterface, id?: string, pw?: string): Promise<boolean> {
     try {
-      let soldierModel: ArmySoldierMIL | null = null;
-      if (typeof soldier === 'string') {
-        soldierModel = this.convertDBSoldierToMILSoldier(await this.getDBSoldierById(soldier));
-      } else {
-        soldierModel = await this.getMILSoldierByDBSoldier(soldier);
-      }
+      let soldierModel: ArmySoldierMIL | null = this.convertDBSoldierToMILSoldier(await this.getDBSoldierBetweenModelAndId(soldier));
 
       if (!soldierModel) return false;
 
