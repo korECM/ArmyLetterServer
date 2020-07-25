@@ -414,7 +414,6 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       armyStub.saveSubscription.resolves(true);
-      // armyStub.findByID.resolves(armySchemaTest);
 
       // Act
       let result = await controller.updateSubscription(BLANK_OBJECT_ID, subscriptionTest);
@@ -430,7 +429,6 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       armyStub.saveSubscription.resolves(true);
-      // armyStub.findByID.resolves(armySchemaTest);
 
       // Act
       let result = await controller.updateSubscription(INVALID_OBJECT_ID, subscriptionTest);
@@ -446,7 +444,6 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       armyStub.saveSubscription.resolves(true);
-      // armyStub.findByID.resolves(armySchemaTest);
 
       // Act
       let result = await controller.updateSubscription(VALID_OBJECT_ID, subscriptionTest);
