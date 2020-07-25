@@ -112,6 +112,95 @@ describe('ArmySoldierService', () => {
       expect(armyStub.create.notCalled).toBe(true);
     });
   });
+
+  describe('getMILSoldierByDBSoldier', () => {
+    it('DBId가 주어지고 유효한 id가 아니라면 null 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      // Act
+      let result = await controller.getMILSoldierByDBSoldier('123');
+
+      // Assert
+      expect(armyStub.findByID.notCalled).toBe(true);
+      expect(result).toBeNull();
+    });
+
+    it('DBId가 빈 문자여로 주어지면 null 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      // Act
+      let result = await controller.getMILSoldierByDBSoldier('');
+
+      // Assert
+      expect(armyStub.findByID.notCalled).toBe(true);
+      expect(result).toBeNull();
+    });
+
+    it('적절한 id가 주어지면 MILSoldier 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.findByID.resolves({
+        armyUnit: '11사단',
+        birthDate: '2000-02-20',
+        corona: true,
+        endDate: '',
+        enterDate: '2020-02-20',
+        letters: [],
+        name: '',
+        news: [],
+        registerDate: new Date(),
+        sports: null,
+        trainUnitEdNm: '',
+      });
+
+      // Act
+      let result = await controller.getMILSoldierByDBSoldier('5f146ae09113064a9f7ed941');
+
+      // Assert
+      expect(armyStub.findByID.called).toBe(true);
+      expect(result).not.toBeNull();
+    });
+
+    it('DB로부터 군인을 구해서 전달했을 때 MILSoldier 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      // Act
+      let result = await controller.getMILSoldierByDBSoldier({
+        armyUnit: '11사단',
+        birthDate: '2000-02-20',
+        corona: true,
+        endDate: '',
+        enterDate: '2020-02-20',
+        letters: [],
+        name: '',
+        news: [],
+        registerDate: new Date(),
+        sports: null,
+        trainUnitEdNm: '',
+      });
+
+      // Assert
+      expect(result).not.toBeNull();
+    });
+  });
+
+  describe('checkMILSoldierExistInSiteByDBSoldier', () => {});
+
+  describe('sendLetter', () => {});
+
+  describe('updateSubscription', () => {});
 });
 
 function dateToString(date: Date) {
