@@ -5,8 +5,9 @@ import { getSoldierList, getSessionId, AirForceSendLetter } from './AirForceServ
 import { ArmySoldierMIL, Cookie, ArmyLetter, AirForceSoldier, AirForceLetter } from '../Models';
 import { checkEmail } from '../Utils';
 import { updateNickname } from './ArmyService/updateNickname';
+import { IMilitaryLetter } from './IMilitaryLetter';
 
-class MilitaryLetter {
+class MilitaryLetter implements IMilitaryLetter {
   private soldier: ArmySoldierMIL | AirForceSoldier | null = null;
   private tempSoldierList: AirForceSoldier[] = [];
   private profileSeq?: number;
