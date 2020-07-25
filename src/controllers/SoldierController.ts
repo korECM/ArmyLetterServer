@@ -15,7 +15,7 @@ export async function getSoldierProxy(req: Request, res: Response, next: NextFun
   let controller = SoldierService.getSoldierController(req.query.type as string);
   if (!controller) return res.status(406).send();
 
-  const soldier = controller.getSoldier(req.params.id);
+  const soldier = controller.getDBSoldierById(req.params.id);
 
   if (!soldier) return res.status(406).send();
 

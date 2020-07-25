@@ -33,7 +33,7 @@ describe('ArmySoldierService', () => {
 
       let spyFn = jest.spyOn(armySoldierService, 'getSoldier');
 
-      let result = await armySoldierService.getSoldier('success');
+      let result = await armySoldierService.getDBSoldierById('success');
 
       expect(spyFn).toBeCalledTimes(1);
       expect(spyFn).lastCalledWith('success');
@@ -46,7 +46,7 @@ describe('ArmySoldierService', () => {
 
       let spyFn = jest.spyOn(armySoldierService, 'getSoldier');
 
-      let result = await armySoldierService.getSoldier('Fail');
+      let result = await armySoldierService.getDBSoldierById('Fail');
 
       expect(spyFn).toBeCalledTimes(1);
       expect(spyFn).lastCalledWith('Fail');

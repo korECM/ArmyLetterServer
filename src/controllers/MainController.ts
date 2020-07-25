@@ -18,7 +18,7 @@ export let createArmySoldierValidator = [
 export async function createArmySoldierProxy(req: Request, res: Response, next: NextFunction) {
   // const soldier = await createArmySoldier(req.body);
   let soldierController = new ArmySoldierService();
-  const soldier = await soldierController.createSoldier(req.body);
+  const soldier = await soldierController.createDBSoldier(req.body);
 
   if (soldier == null) return res.status(404).send();
 

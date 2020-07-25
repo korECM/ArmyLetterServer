@@ -2,11 +2,15 @@ import { MyError } from '../../types';
 import { ArmySoldierService } from './ArmySoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
-import { ArmySoldierMIL, AirForceSoldier, ArmySoldierInterface, AirForceSoldierInterface } from '../../module/MIL/Models';
+import { ArmySoldierMIL, AirForceSoldier, ArmySoldierInterface, AirForceSoldierInterface, ArmyLetter, AirForceLetter } from '../../module/MIL/Models';
 
-export type SoldierDBModel = ArmySoldierSchemaColumnsInterface | AirForceSchemaInterface;
+export type SoldierSimpleDBModel = ArmySoldierSchemaColumnsInterface | AirForceSchemaInterface;
+
+export type SoldierDBModel = ArmySoldierSchemaInterface | AirForceSchemaInterface;
 
 export type SoldierMILModel = ArmySoldierMIL | AirForceSoldier;
+
+export type MILLetterModel = ArmyLetter | AirForceLetter;
 
 export abstract class SoldierService {
   constructor() {}
@@ -20,11 +24,13 @@ export abstract class SoldierService {
     }
   }
 
-  abstract async getSoldier(id: string): Promise<SoldierDBModel | null>;
+  abstract async getDBSoldierById(id: string): Promise<SoldierSimpleDBModel | null>;
 
-  abstract async findSoldierFromSite(soldier: SoldierDBModel | string): Promise<SoldierMILModel | null>;
+  abstract async getMILSoldierByDBSoldier(soldier: SoldierSimpleDBModel | string): Promise<SoldierMILModel | null>;
 
-  abstract async createSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<SoldierMILModel | null>;
+  abstract async createDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<SoldierDBModel | null>;
 
-  abstract async checkSoldierExistInSite(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
+  abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
+
+  abstract async sendLetter(soldierID: string, letter: MILLetterModel): Promise<boolean>;
 }

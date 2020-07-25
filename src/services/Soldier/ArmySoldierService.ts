@@ -1,8 +1,8 @@
 import { SoldierService } from './SoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierDBInterface, ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
-import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName } from '../../module/MIL/Models';
-import { SoldierDBModel, SoldierMILModel } from './SoldierService';
+import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } from '../../module/MIL/Models';
+import { SoldierSimpleDBModel, SoldierMILModel } from './SoldierService';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 
 export class ArmySoldierService extends SoldierService {
@@ -10,7 +10,7 @@ export class ArmySoldierService extends SoldierService {
     super();
   }
 
-  async getSoldier(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
+  async getDBSoldierById(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
     try {
       return await this.ArmySoldierDBModel.findByID(id);
     } catch (error) {
@@ -19,25 +19,24 @@ export class ArmySoldierService extends SoldierService {
     }
   }
 
-  async createSoldier(soldier: ArmySoldierInterface) {
-    let armySoldier = await this.getSoldierFromSite(
-      this.convertArmySoldierSchemaToArmySoldierMIL(null, soldier.name, soldier.armyUnit, soldier.birthDate, soldier.enterDate)!,
+  async createDBSoldier(soldier: ArmySoldierInterface) {
+    let armySoldier = await this.getMILSoldierFromSite(
+      this.convertDBSoldierToMILSoldier(null, soldier.name, soldier.armyUnit, soldier.birthDate, soldier.enterDate)!,
     );
     if (armySoldier) {
-      await this.ArmySoldierDBModel.create({
+      return await this.ArmySoldierDBModel.create({
         ...armySoldier,
         letters: [],
         armyUnit: armySoldier.trainUnitCdName!,
         trainUnitEdNm: armySoldier.trainUnitEdNm!,
         endDate: armySoldier.endDate!,
       });
-      return armySoldier;
     } else {
       return null;
     }
   }
 
-  private async getSoldierFromSite(soldier: ArmySoldierMIL) {
+  private async getMILSoldierFromSite(soldier: ArmySoldierMIL) {
     let ml = new MilitaryLetter();
     try {
       await ml.config(process.env.ID!, process.env.PW!);
@@ -51,24 +50,24 @@ export class ArmySoldierService extends SoldierService {
     }
   }
 
-  async checkSoldierExistInSite(soldier: ArmySoldierSchemaColumnsInterface): Promise<boolean> {
-    return (await this.getSoldierFromSite(this.convertArmySoldierSchemaToArmySoldierMIL(soldier)!)) !== null;
+  async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierSchemaColumnsInterface): Promise<boolean> {
+    return (await this.getMILSoldierFromSite(this.convertDBSoldierToMILSoldier(soldier)!)) !== null;
   }
 
-  async findSoldierFromSite(soldier: ArmySoldierSchemaColumnsInterface | string): Promise<ArmySoldierMIL | null> {
+  async getMILSoldierByDBSoldier(soldier: ArmySoldierSchemaColumnsInterface | string): Promise<ArmySoldierMIL | null> {
     let soldierModel: ArmySoldierSchemaColumnsInterface | null = null;
     if (typeof soldier === 'string') {
-      soldierModel = await this.getSoldier(soldier);
+      soldierModel = await this.getDBSoldierById(soldier);
     } else {
       soldierModel = soldier;
     }
 
     if (soldierModel === null) return null;
 
-    return this.getSoldierFromSite(this.convertArmySoldierSchemaToArmySoldierMIL(soldierModel)!);
+    return this.convertDBSoldierToMILSoldier(soldierModel);
   }
 
-  private convertArmySoldierSchemaToArmySoldierMIL(
+  private convertDBSoldierToMILSoldier(
     soldierModel: ArmySoldierSchemaColumnsInterface | null,
     name?: string,
     armyUnit?: ArmyUnitTypeName,
@@ -97,5 +96,29 @@ export class ArmySoldierService extends SoldierService {
       });
     }
     return null;
+  }
+
+  async sendLetter(soldierId: string, letter: ArmyLetter, id?: string, pw?: string): Promise<boolean> {
+    try {
+      let soldier = await this.getMILSoldierByDBSoldier(soldierId);
+
+      if (!soldier) return false;
+
+      const ml = new MilitaryLetter();
+      if (id && id.length && pw && pw?.length) {
+        await ml.config(id, pw);
+      } else {
+        await ml.config(process.env.ID!, process.env.PW!);
+      }
+
+      await ml.setSoldier(soldier);
+
+      await ml.sendLetter(letter);
+
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 }
