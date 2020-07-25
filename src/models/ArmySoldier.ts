@@ -41,7 +41,7 @@ export default ArmySoldier;
 
 export interface ArmySoldierDBInterface {
   findByID(id: string): Promise<ArmySoldierSchemaColumnsInterface | null>;
-  create(data: ArmySoldierDBCreateInterface): Promise<void>;
+  create(data: ArmySoldierDBCreateInterface): Promise<ArmySoldierSchemaInterface>;
 }
 
 interface ArmySoldierDBCreateInterface {
@@ -63,5 +63,6 @@ export class ArmySoldierDB implements ArmySoldierDBInterface {
   async create(data: ArmySoldierDBCreateInterface) {
     let soldier = new ArmySoldier(data);
     await soldier.save();
+    return soldier;
   }
 }
