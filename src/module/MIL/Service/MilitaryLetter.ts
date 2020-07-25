@@ -154,7 +154,8 @@ class MilitaryLetter implements IMilitaryLetter {
   public async updateNickname(nickname: string): Promise<boolean> {
     this.checkReady();
     if (!nickname || nickname.length === 0) {
-      throw new Error('공백을 이름으로 설정할 수 없습니다');
+      console.error('닉네임은 공백이 올 수 없습니다');
+      return false;
     }
     if (this.cookie && (await this.checkNickname(nickname))) {
       return await updateNickname(this.cookie, this.profileSeq!, nickname);
