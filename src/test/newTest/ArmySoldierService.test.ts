@@ -1,58 +1,35 @@
-import mongoose from 'mongoose';
+import sinon from 'sinon';
+import { SoldierService } from '../../services/Soldier/SoldierService';
 import { ArmySoldierService } from '../../services/Soldier/ArmySoldierService';
-import { ArmySoldierDBInterface, ArmySoldierSchemaInterface, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
-
-class ArmySoldierServiceStub implements ArmySoldierDBInterface {
-  findByID(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
-    return new Promise((resolve, reject) => {
-      if (id === 'success') {
-        resolve({
-          name: '성공',
-          birthDate: '',
-          enterDate: '',
-          armyUnit: '11사단',
-          trainUnitEdNm: '',
-          endDate: '',
-          sports: null,
-          news: [],
-          letters: [],
-          corona: false,
-          registerDate: new Date(),
-        });
-      } else {
-        reject(null);
-      }
-    });
-  }
-}
+import { ArmySoldierDB } from '../../models/ArmySoldier';
 
 describe('ArmySoldierService', () => {
-  describe('getSoldier', () => {
-    it('군인을 찾으면 그 군인을 반환한다', async (done) => {
-      let armySoldierService = new ArmySoldierService(new ArmySoldierServiceStub());
+  describe('getDBSoldierById', () => {
+    it('id가 주어지면 ArmySoldierDBModel에 요청한다', async (done) => {
+      let armyDB = new ArmySoldierDB();
+      let stub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(stub);
 
-      let spyFn = jest.spyOn(armySoldierService, 'getSoldier');
+      await controller.getDBSoldierById('5f146ae09113064a9f7ed941');
 
-      let result = await armySoldierService.getDBSoldierById('success');
-
-      expect(spyFn).toBeCalledTimes(1);
-      expect(spyFn).lastCalledWith('success');
-      expect(result!.name).toBe('성공');
+      expect(stub.findByID.calledOnceWith('5f146ae09113064a9f7ed941')).toBe(true);
 
       done();
     });
-    it('해당 군인이 존재하지 않으면 null을 반환한다', async (done) => {
-      let armySoldierService = new ArmySoldierService(new ArmySoldierServiceStub());
 
-      let spyFn = jest.spyOn(armySoldierService, 'getSoldier');
+    it('만약 id가 주어지지 않거나 올바른 ObjectID가 아니라면 null을 반환한다', async (done) => {
+      let armyDB = new ArmySoldierDB();
+      let stub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(stub);
 
-      let result = await armySoldierService.getDBSoldierById('Fail');
+      await controller.getDBSoldierById('');
+      await controller.getDBSoldierById('123456');
 
-      expect(spyFn).toBeCalledTimes(1);
-      expect(spyFn).lastCalledWith('Fail');
-      expect(result).toBeNull();
+      expect(stub.findByID.callCount).toBe(0);
 
       done();
     });
   });
+
+
 });

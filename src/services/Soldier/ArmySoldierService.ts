@@ -4,6 +4,7 @@ import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } from '../../module/MIL/Models';
 import { SoldierSimpleDBModel, SoldierMILModel } from './SoldierService';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
+import { isValidObjectId } from 'mongoose';
 
 export class ArmySoldierService extends SoldierService {
   constructor(private ArmySoldierDBModel: ArmySoldierDBInterface = new ArmySoldierDB()) {
@@ -19,6 +20,8 @@ export class ArmySoldierService extends SoldierService {
   }
 
   async getDBSoldierById(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
+    if (!id || !id.length || isValidObjectId(id) === false) return null;
+
     try {
       return await this.ArmySoldierDBModel.findByID(id);
     } catch (error) {
@@ -28,9 +31,7 @@ export class ArmySoldierService extends SoldierService {
   }
 
   async createDBSoldier(soldier: ArmySoldierInterface) {
-    let armySoldier = await this.getMILSoldierFromSite(
-      this.convertDBSoldierToMILSoldier(null, soldier.name, soldier.armyUnit, soldier.birthDate, soldier.enterDate)!,
-    );
+    let armySoldier = await this.getMILSoldierFromSite(this.createMILSoldier(soldier.name, soldier.armyUnit, soldier.birthDate, soldier.enterDate)!);
     if (armySoldier) {
       return await this.ArmySoldierDBModel.create({
         ...armySoldier,
@@ -79,35 +80,29 @@ export class ArmySoldierService extends SoldierService {
     return this.convertDBSoldierToMILSoldier(soldierModel);
   }
 
-  private convertDBSoldierToMILSoldier(
-    soldierModel: ArmySoldierSchemaColumnsInterface | null,
-    name?: string,
-    armyUnit?: ArmyUnitTypeName,
-    birthDate?: string,
-    enterDate?: string,
-  ) {
-    if (soldierModel) {
-      return new ArmySoldierMIL({
-        armyType: '육군',
-        relationship: '친구/지인',
-        soldierType: '예비군인/훈련병',
-        armyUnit: soldierModel.armyUnit,
-        birthDate: soldierModel.birthDate,
-        enterDate: soldierModel.enterDate,
-        name: soldierModel.name,
-      });
-    } else if (name && armyUnit && birthDate && enterDate) {
-      return new ArmySoldierMIL({
-        armyType: '육군',
-        relationship: '친구/지인',
-        soldierType: '예비군인/훈련병',
-        armyUnit: armyUnit,
-        birthDate: birthDate,
-        enterDate: enterDate,
-        name: name,
-      });
-    }
-    return null;
+  private convertDBSoldierToMILSoldier(soldierModel: ArmySoldierSchemaColumnsInterface | null) {
+    if (soldierModel === null) return null;
+    return new ArmySoldierMIL({
+      armyType: '육군',
+      relationship: '친구/지인',
+      soldierType: '예비군인/훈련병',
+      armyUnit: soldierModel.armyUnit,
+      birthDate: soldierModel.birthDate,
+      enterDate: soldierModel.enterDate,
+      name: soldierModel.name,
+    });
+  }
+
+  private createMILSoldier(name: string, armyUnit: ArmyUnitTypeName, birthDate: string, enterDate: string) {
+    return new ArmySoldierMIL({
+      armyType: '육군',
+      relationship: '친구/지인',
+      soldierType: '예비군인/훈련병',
+      armyUnit: armyUnit,
+      birthDate: birthDate,
+      enterDate: enterDate,
+      name: name,
+    });
   }
 
   async sendLetter(soldier: string | ArmySoldierSchemaColumnsInterface, letter: MILLetterInterface, id?: string, pw?: string): Promise<boolean> {
