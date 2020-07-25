@@ -1,4 +1,4 @@
-import { SoldierService } from './SoldierService';
+import { SoldierService, MILLetterInterface } from './SoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierDBInterface, ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } from '../../module/MIL/Models';
@@ -98,7 +98,7 @@ export class ArmySoldierService extends SoldierService {
     return null;
   }
 
-  async sendLetter(soldier: string | ArmySoldierSchemaColumnsInterface, letter: ArmyLetter, id?: string, pw?: string): Promise<boolean> {
+  async sendLetter(soldier: string | ArmySoldierSchemaColumnsInterface, letter: MILLetterInterface, id?: string, pw?: string): Promise<boolean> {
     try {
       let soldierModel: ArmySoldierMIL | null = null;
       if (typeof soldier === 'string') {
@@ -118,7 +118,11 @@ export class ArmySoldierService extends SoldierService {
 
       await ml.setSoldier(soldierModel);
 
-      await ml.sendLetter(letter);
+      if ((await ml.updateNickname(letter.sender)) === false) {
+        await ml.updateNickname('인편 대행 서비스');
+      }
+
+      await ml.sendLetter(new ArmyLetter(letter.title, letter.body));
 
       return true;
     } catch (error) {

@@ -12,6 +12,14 @@ export type SoldierMILModel = ArmySoldierMIL | AirForceSoldier;
 
 export type MILLetterModel = ArmyLetter | AirForceLetter;
 
+export interface MILLetterInterface {
+  title: string;
+  body: string;
+  sender: string;
+  relationship?: string;
+  password?: string;
+}
+
 export abstract class SoldierService {
   constructor() {}
 
@@ -32,5 +40,5 @@ export abstract class SoldierService {
 
   abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
 
-  abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterModel): Promise<boolean>;
+  abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterInterface): Promise<boolean>;
 }
