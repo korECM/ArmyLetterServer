@@ -44,10 +44,19 @@ export class ArmySoldierService extends SoldierService {
     }
   }
 
-  private async getMILSoldierFromSite(soldier: ArmySoldierMIL) {
-    let ml = new MilitaryLetter();
-    try {
+  private async loginMIL(id?: string, pw?: string) {
+    const ml = new MilitaryLetter();
+    if (id && id.length && pw && pw?.length) {
+      await ml.config(id, pw);
+    } else {
       await ml.config(process.env.ID!, process.env.PW!);
+    }
+    return ml;
+  }
+
+  private async getMILSoldierFromSite(soldier: ArmySoldierMIL, id?: string, pw?: string) {
+    try {
+      let ml = await this.loginMIL(id, pw);
 
       await ml.setSoldier(soldier);
 
@@ -107,12 +116,7 @@ export class ArmySoldierService extends SoldierService {
 
       if (!soldierModel) return false;
 
-      const ml = new MilitaryLetter();
-      if (id && id.length && pw && pw?.length) {
-        await ml.config(id, pw);
-      } else {
-        await ml.config(process.env.ID!, process.env.PW!);
-      }
+      let ml = await this.loginMIL(id, pw);
 
       await ml.setSoldier(soldierModel);
 
