@@ -2,9 +2,23 @@ import sinon from 'sinon';
 import * as faker from 'faker/locale/ko';
 import { SoldierService } from '../../services/Soldier/SoldierService';
 import { ArmySoldierService } from '../../services/Soldier/ArmySoldierService';
-import { ArmySoldierDB } from '../../models/ArmySoldier';
+import { ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 import { ArmyUnitTypeName } from '../../module/MIL/Models';
+
+let armySchemaTest: ArmySoldierSchemaColumnsInterface = {
+  armyUnit: '11사단',
+  birthDate: '2000-02-20',
+  corona: true,
+  endDate: '',
+  enterDate: '2020-02-20',
+  letters: [],
+  name: '',
+  news: [],
+  registerDate: new Date(),
+  sports: null,
+  trainUnitEdNm: '',
+};
 
 describe('ArmySoldierService', () => {
   describe('getDBSoldierById', () => {
@@ -148,19 +162,7 @@ describe('ArmySoldierService', () => {
       let armyStub = sinon.stub(armyDB);
       let controller = new ArmySoldierService(armyStub);
 
-      armyStub.findByID.resolves({
-        armyUnit: '11사단',
-        birthDate: '2000-02-20',
-        corona: true,
-        endDate: '',
-        enterDate: '2020-02-20',
-        letters: [],
-        name: '',
-        news: [],
-        registerDate: new Date(),
-        sports: null,
-        trainUnitEdNm: '',
-      });
+      armyStub.findByID.resolves(armySchemaTest);
 
       // Act
       let result = await controller.getMILSoldierByDBSoldier('5f146ae09113064a9f7ed941');
@@ -177,26 +179,55 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       // Act
-      let result = await controller.getMILSoldierByDBSoldier({
-        armyUnit: '11사단',
-        birthDate: '2000-02-20',
-        corona: true,
-        endDate: '',
-        enterDate: '2020-02-20',
-        letters: [],
-        name: '',
-        news: [],
-        registerDate: new Date(),
-        sports: null,
-        trainUnitEdNm: '',
-      });
+      let result = await controller.getMILSoldierByDBSoldier(armySchemaTest);
 
       // Assert
       expect(result).not.toBeNull();
     });
   });
 
-  describe('checkMILSoldierExistInSiteByDBSoldier', () => {});
+  describe('checkMILSoldierExistInSiteByDBSoldier', () => {
+    it('군인이 사이트에 존재하면 true 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      let birthDate = dateToString(faker.date.between(new Date('1999/01/01'), new Date('2001/12/31')));
+      let enterDate = dateToString(faker.date.recent());
+      let endDate = dateToString(faker.date.recent());
+      let name = `${faker.name.lastName()}${faker.name.firstName()}`;
+      let armyUnit: ArmyUnitTypeName = '육군훈련소-논산';
+      let trainUnitEdNm = '1교육대 4중대';
+
+      milStub.getSoldier.returns({ birthDate, enterDate, name, trainUnitCdName: armyUnit, trainUnitEdNm, endDate });
+
+      // Act
+      let result = await controller.checkMILSoldierExistInSiteByDBSoldier(armySchemaTest);
+
+      // Assert
+      expect(result).toBe(true);
+    });
+
+    it('군인이 사이트에 존재하지 않으면 false 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      milStub.getSoldier.returns(null);
+
+      // Act
+      let result = await controller.checkMILSoldierExistInSiteByDBSoldier(armySchemaTest);
+
+      // Assert
+      expect(result).toBe(false);
+    });
+  });
 
   describe('sendLetter', () => {});
 
