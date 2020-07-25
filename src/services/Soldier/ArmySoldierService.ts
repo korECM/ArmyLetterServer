@@ -98,11 +98,16 @@ export class ArmySoldierService extends SoldierService {
     return null;
   }
 
-  async sendLetter(soldierId: string, letter: ArmyLetter, id?: string, pw?: string): Promise<boolean> {
+  async sendLetter(soldier: string | ArmySoldierSchemaColumnsInterface, letter: ArmyLetter, id?: string, pw?: string): Promise<boolean> {
     try {
-      let soldier = await this.getMILSoldierByDBSoldier(soldierId);
+      let soldierModel: ArmySoldierMIL | null = null;
+      if (typeof soldier === 'string') {
+        soldierModel = this.convertDBSoldierToMILSoldier(await this.getDBSoldierById(soldier));
+      } else {
+        soldierModel = await this.getMILSoldierByDBSoldier(soldier);
+      }
 
-      if (!soldier) return false;
+      if (!soldierModel) return false;
 
       const ml = new MilitaryLetter();
       if (id && id.length && pw && pw?.length) {
@@ -111,7 +116,7 @@ export class ArmySoldierService extends SoldierService {
         await ml.config(process.env.ID!, process.env.PW!);
       }
 
-      await ml.setSoldier(soldier);
+      await ml.setSoldier(soldierModel);
 
       await ml.sendLetter(letter);
 

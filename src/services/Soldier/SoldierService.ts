@@ -32,5 +32,5 @@ export abstract class SoldierService {
 
   abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
 
-  abstract async sendLetter(soldierID: string, letter: MILLetterModel): Promise<boolean>;
+  abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterModel): Promise<boolean>;
 }
