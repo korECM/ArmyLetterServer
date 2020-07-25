@@ -47,8 +47,11 @@ class MilitaryLetter implements IMilitaryLetter {
    * @memberof MilitaryLetter
    */
   public async setSoldier(soldier: ArmySoldierMIL | AirForceSoldier, selectNum: number = 0) {
+    this.soldier = null;
+
     if (soldier === undefined || soldier === null) {
-      throw new Error('군인이 제대로 전달되지 않았습니다');
+      console.error('군인이 제대로 전달되지 않았습니다');
+      return;
     }
     this.soldier = soldier;
     if (this.soldier instanceof ArmySoldierMIL) {
@@ -58,13 +61,16 @@ class MilitaryLetter implements IMilitaryLetter {
         await createCafeCheck(this.soldier!, this.cookie!);
         // await deleteSoldier(this.soldier!, this.cookie!);
       } catch (error) {
-        throw error;
+        console.error(error);
+        this.soldier = null;
+        return;
       }
     } else if (this.soldier instanceof AirForceSoldier) {
       this.tempSoldierList = await getSoldierList(this.soldier!);
-      // console.log(this.tempSoldierList);
       if (this.tempSoldierList.length === 0) {
-        throw new Error('해당 정보와 일치하는 군인이 존재하지 않습니다');
+        console.error('해당 정보와 일치하는 군인이 존재하지 않습니다');
+        this.soldier = null;
+        return;
       }
       await this.selectSoldier(selectNum);
     }
