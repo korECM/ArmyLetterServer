@@ -20,7 +20,7 @@ export interface IMilitaryLetter {
    * @param {number} [selectNum=0] 해당 정보와 일치하는 훈련병이 여러명인 경우 한명을 선택하는 인덱스입니다. 기본값은 0입니다.
    * @memberof MilitaryLetter
    */
-  setSoldier(soldier: ArmySoldierMIL | AirForceSoldier, selectNum: number): any;
+  setSoldier(soldier: ArmySoldierMIL | AirForceSoldier, selectNum?: number): any;
   /**
    * 공군의 경우 주어진 정보와 일치하는 군인들을 모두 반환하는 함수입니다.
    *
