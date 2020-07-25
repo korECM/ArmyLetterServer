@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import * as faker from 'faker/locale/ko';
-import { SoldierService } from '../../services/Soldier/SoldierService';
+import { SoldierService, SubscriptionRequestInterface } from '../../services/Soldier/SoldierService';
 import { ArmySoldierService } from '../../services/Soldier/ArmySoldierService';
 import { ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
@@ -20,6 +20,15 @@ let armySchemaTest: ArmySoldierSchemaColumnsInterface = {
   trainUnitEdNm: '',
 };
 
+let subscriptionTest: SubscriptionRequestInterface = {
+  news: [],
+  sports: { esports: [], koreaBaseball: [], koreaBasketball: [], koreaSoccer: [], worldBaseball: [], worldBasketball: [], worldSoccer: [] },
+};
+
+const VALID_OBJECT_ID = '5f146ae09113064a9f7ed941';
+const INVALID_OBJECT_ID = '123';
+const BLANK_OBJECT_ID = '';
+
 describe('ArmySoldierService', () => {
   describe('getDBSoldierById', () => {
     it('id가 주어지면 ArmySoldierDBModel에 요청한다', async (done) => {
@@ -27,9 +36,9 @@ describe('ArmySoldierService', () => {
       let stub = sinon.stub(armyDB);
       let controller = new ArmySoldierService(stub);
 
-      await controller.getDBSoldierById('5f146ae09113064a9f7ed941');
+      await controller.getDBSoldierById(VALID_OBJECT_ID);
 
-      expect(stub.findByID.calledOnceWith('5f146ae09113064a9f7ed941')).toBe(true);
+      expect(stub.findByID.calledOnceWith(VALID_OBJECT_ID)).toBe(true);
 
       done();
     });
@@ -39,7 +48,7 @@ describe('ArmySoldierService', () => {
       let stub = sinon.stub(armyDB);
       let controller = new ArmySoldierService(stub);
 
-      await controller.getDBSoldierById('');
+      await controller.getDBSoldierById(BLANK_OBJECT_ID);
       await controller.getDBSoldierById('123456');
 
       expect(stub.findByID.callCount).toBe(0);
@@ -135,7 +144,7 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       // Act
-      let result = await controller.getMILSoldierByDBSoldier('123');
+      let result = await controller.getMILSoldierByDBSoldier(INVALID_OBJECT_ID);
 
       // Assert
       expect(armyStub.findByID.notCalled).toBe(true);
@@ -149,7 +158,7 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub);
 
       // Act
-      let result = await controller.getMILSoldierByDBSoldier('');
+      let result = await controller.getMILSoldierByDBSoldier(BLANK_OBJECT_ID);
 
       // Assert
       expect(armyStub.findByID.notCalled).toBe(true);
@@ -165,7 +174,7 @@ describe('ArmySoldierService', () => {
       armyStub.findByID.resolves(armySchemaTest);
 
       // Act
-      let result = await controller.getMILSoldierByDBSoldier('5f146ae09113064a9f7ed941');
+      let result = await controller.getMILSoldierByDBSoldier(VALID_OBJECT_ID);
 
       // Assert
       expect(armyStub.findByID.called).toBe(true);
@@ -241,7 +250,7 @@ describe('ArmySoldierService', () => {
       armyStub.findByID.resolves(armySchemaTest);
       // Act
       let result = await controller.sendLetter(
-        '5f146ae09113064a9f7ed941',
+        VALID_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -265,7 +274,7 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub, milStub);
       // Act
       let result = await controller.sendLetter(
-        '',
+        BLANK_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -290,7 +299,7 @@ describe('ArmySoldierService', () => {
       let controller = new ArmySoldierService(armyStub, milStub);
       // Act
       let result = await controller.sendLetter(
-        '123',
+        INVALID_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -318,7 +327,7 @@ describe('ArmySoldierService', () => {
 
       // Act
       let result = await controller.sendLetter(
-        '5f146ae09113064a9f7ed941',
+        VALID_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -348,7 +357,7 @@ describe('ArmySoldierService', () => {
 
       // Act
       let result = await controller.sendLetter(
-        '5f146ae09113064a9f7ed941',
+        VALID_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -378,7 +387,7 @@ describe('ArmySoldierService', () => {
 
       // Act
       let result = await controller.sendLetter(
-        '5f146ae09113064a9f7ed941',
+        VALID_OBJECT_ID,
         {
           title: '제목',
           body: '내용',
@@ -397,7 +406,56 @@ describe('ArmySoldierService', () => {
     });
   });
 
-  describe('updateSubscription', () => {});
+  describe('updateSubscription', () => {
+    it('빈 id가 주어지면 false 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.saveSubscription.resolves(true);
+      // armyStub.findByID.resolves(armySchemaTest);
+
+      // Act
+      let result = await controller.updateSubscription(BLANK_OBJECT_ID, subscriptionTest);
+
+      // Assert
+      expect(result).toBe(false);
+    });
+
+    it('적절하지 않은 id가 주어지면 false 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.saveSubscription.resolves(true);
+      // armyStub.findByID.resolves(armySchemaTest);
+
+      // Act
+      let result = await controller.updateSubscription(INVALID_OBJECT_ID, subscriptionTest);
+
+      // Assert
+      expect(result).toBe(false);
+    });
+
+    it('적절한 id가 주어지면 saveSubscription 호출', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.saveSubscription.resolves(true);
+      // armyStub.findByID.resolves(armySchemaTest);
+
+      // Act
+      let result = await controller.updateSubscription(VALID_OBJECT_ID, subscriptionTest);
+
+      // Assert
+      expect(result).toBe(true);
+      expect(armyStub.saveSubscription.calledOnceWith(VALID_OBJECT_ID, subscriptionTest));
+    });
+  });
 });
 
 function dateToString(date: Date) {

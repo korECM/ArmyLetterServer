@@ -130,6 +130,7 @@ export class ArmySoldierService extends SoldierService {
   }
 
   async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
+    if (!soldier || soldier.length === 0 || isValidObjectId(soldier) === false) return false;
     return await this.ArmySoldierDBModel.saveSubscription(soldier, subscription);
   }
 }
