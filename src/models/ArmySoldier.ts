@@ -1,7 +1,8 @@
 import mongoose, { Schema } from 'mongoose';
-import { SportsSchemaInterface } from './Sports';
+import Sports, { SportsSchemaInterface } from './Sports';
 import { LetterSchemaInterface } from './Letter';
 import { ArmyUnitTypeName } from '../module/MIL/Models/Army';
+import { SubscriptionRequestInterface } from '../services/Soldier/SoldierService';
 
 export interface ArmySoldierSchemaColumnsInterface {
   name: string;
@@ -42,6 +43,7 @@ export default ArmySoldier;
 export interface ArmySoldierDBInterface {
   findByID(id: string): Promise<ArmySoldierSchemaColumnsInterface | null>;
   create(data: ArmySoldierDBCreateInterface): Promise<ArmySoldierSchemaInterface>;
+  saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 }
 
 interface ArmySoldierDBCreateInterface {
@@ -64,5 +66,42 @@ export class ArmySoldierDB implements ArmySoldierDBInterface {
     let soldier = new ArmySoldier(data);
     await soldier.save();
     return soldier;
+  }
+
+  async saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
+    let soldier = (await this.findByID(id)) as ArmySoldierSchemaInterface;
+    if (!soldier) return false;
+
+    let sports: SportsSchemaInterface | null;
+
+    // undefined or null
+    if (!soldier.sports) {
+      sports = new Sports();
+      soldier.sports = sports._id;
+    } else {
+      sports = soldier.sports;
+    }
+
+    const { koreaBaseball, koreaBasketball, koreaSoccer, worldBaseball, worldBasketball, worldSoccer, esports } = subscription.sports;
+
+    sports.koreaBaseball = koreaBaseball;
+    sports.koreaBasketball = koreaBasketball;
+    sports.koreaSoccer = koreaSoccer;
+    sports.worldBaseball = worldBaseball;
+    sports.worldBasketball = worldBasketball;
+    sports.worldSoccer = worldSoccer;
+    sports.esports = esports;
+
+    await sports.save();
+
+    const { news } = subscription;
+
+    soldier.news = news;
+
+    // TODO: 코로나 추가
+
+    await soldier.save();
+
+    return true;
   }
 }
