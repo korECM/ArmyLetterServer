@@ -41,7 +41,7 @@ const ArmySoldier = mongoose.model<ArmySoldierSchemaInterface>('ArmySoldier', Ar
 export default ArmySoldier;
 
 export interface ArmySoldierDBInterface {
-  findByID(id: string): Promise<ArmySoldierSchemaColumnsInterface | null>;
+  findByID(id: string, populate?: string): Promise<ArmySoldierSchemaColumnsInterface | null>;
   create(data: ArmySoldierDBCreateInterface): Promise<ArmySoldierSchemaInterface>;
   saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 }
@@ -58,7 +58,8 @@ interface ArmySoldierDBCreateInterface {
 export class ArmySoldierDB implements ArmySoldierDBInterface {
   constructor() {}
 
-  async findByID(id: string) {
+  async findByID(id: string, populate?: string) {
+    if (populate) (await ArmySoldier.findOne({ _id: id }).populate(populate).exec()) as ArmySoldierSchemaColumnsInterface;
     return (await ArmySoldier.findOne({ _id: id }).exec()) as ArmySoldierSchemaColumnsInterface;
   }
 
