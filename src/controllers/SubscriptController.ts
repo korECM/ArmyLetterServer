@@ -7,30 +7,24 @@ import AirForceSoldierModel, { AirForceSchemaInterface } from '../models/AirForc
 import { getAirForceSoldier, getArmySoldier, getAirForceSoldierWithSports, getArmySoldierWithSports } from '../services/GetSoldierFromDB';
 import Sports, { SportsSchemaInterface } from '../models/Sports';
 import { saveSoldier } from '../services/SaveSoldier';
+import { SoldierService } from '../services/Soldier/SoldierService';
 
 let { ObjectId } = Types;
-
-export interface SubscriptionRequestInterface {
-  sports: {
-    koreaBaseball: string[];
-    koreaBasketball: string[];
-    koreaSoccer: string[];
-    worldBaseball: string[];
-    worldBasketball: string[];
-    worldSoccer: string[];
-    esports: string[];
-  };
-  news: string[];
-}
 
 export let postSubValidator = [param('id').notEmpty(), query('type').notEmpty().isIn(['airForce', 'army']), body('sports').notEmpty()];
 
 export async function postSubscriptionProxy(req: Request, res: Response, next: NextFunction) {
   if (!ObjectId.isValid(req.params.id!)) return res.status(406).send();
 
-  await postSubscription(req.params.id!, req.query.type as string, req.body);
+  let controller = SoldierService.getSoldierController(req.query.type as string)!;
 
-  return res.status(200).send();
+  if (await controller.updateSubscription(req.params.id, req.body)) {
+    // 업데이트 성공하면
+    return res.status(200).send();
+  } else {
+    // 업데이트 실패하면
+    return res.status(406).send();
+  }
 }
 
 export async function postSubscription(soldierID: string, soldierType: string, subscription: SubscriptionRequestInterface) {
