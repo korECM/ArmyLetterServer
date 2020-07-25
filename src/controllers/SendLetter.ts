@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query, body } from 'express-validator';
 import { Types } from 'mongoose';
-import { getAirForceSoldier, getArmySoldier } from '../services/GetSoldierFromDB';
-import { sendAirForceSoldierLetter, sendArmySoldierLetter } from '../services/sendLetter';
-import { AirForceLetter, ArmyLetter, ArmySoldierInterface } from '../module/MIL/Models';
-import { ArmySoldierSchemaInterface } from '../models/ArmySoldier';
+import { sendAirForceSoldierLetter } from '../services/sendLetter';
+import { AirForceLetter } from '../module/MIL/Models';
+import { SoldierService } from '../services/Soldier/SoldierService';
 
 let { ObjectId } = Types;
 
@@ -18,7 +17,9 @@ export let sendLetterValidator = [
 export async function sendLetterProxy(req: Request, res: Response, next: NextFunction) {
   if (!ObjectId.isValid(req.params.id!)) return res.status(406).send();
 
-  const soldier = await getSoldier(req.params.id!, req.query.type as string);
+  const soldierController = SoldierService.getSoldierController(req.query.type as string)!;
+
+  const soldier = await soldierController.getDBSoldierById(req.params.id);
   if (!soldier) return res.status(406).send();
 
   let { title, body, sender, password, relationship } = req.body;
@@ -27,34 +28,8 @@ export async function sendLetterProxy(req: Request, res: Response, next: NextFun
     if (!sender || !password || !relationship) return res.status(400).send();
     await sendAirForceSoldierLetter(soldier, new AirForceLetter(title, body, sender, relationship, '', '', '', password));
   } else {
-    //TODO: 보내는 사람 이름 설정
-    await sendArmySoldierLetter(
-      {
-        armyType: '육군',
-        armyUnit: (soldier as ArmySoldierSchemaInterface).armyUnit,
-        birthDate: soldier.birthDate,
-        enterDate: soldier.enterDate,
-        name: soldier.name,
-        relationship: '친구/지인',
-        soldierType: '예비군인/훈련병',
-      },
-      new ArmyLetter(title, body),
-      '',
-    );
+    await soldierController.sendLetter(soldier, { title, body, sender, relationship, password });
   }
 
   return res.status(200).json(soldier);
-}
-
-export async function getSoldier(soldierID: string, soldierType: string) {
-  switch (soldierType) {
-    case 'airForce':
-      return await getAirForceSoldier(soldierID);
-    case 'army':
-      return await getArmySoldier(soldierID);
-    default:
-      return null;
-  }
-
-  return null;
 }
