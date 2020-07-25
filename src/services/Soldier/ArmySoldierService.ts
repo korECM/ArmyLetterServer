@@ -5,9 +5,10 @@ import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } fr
 import { SoldierSimpleDBModel, SoldierMILModel } from './SoldierService';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 import { isValidObjectId } from 'mongoose';
+import { IMilitaryLetter } from '../../module/MIL/Service/IMilitaryLetter';
 
 export class ArmySoldierService extends SoldierService {
-  constructor(private ArmySoldierDBModel: ArmySoldierDBInterface = new ArmySoldierDB()) {
+  constructor(private ArmySoldierDBModel: ArmySoldierDBInterface = new ArmySoldierDB(), private militaryLetter: IMilitaryLetter = new MilitaryLetter()) {
     super();
   }
 
@@ -46,7 +47,7 @@ export class ArmySoldierService extends SoldierService {
   }
 
   private async loginMIL(id?: string, pw?: string) {
-    const ml = new MilitaryLetter();
+    const ml = this.militaryLetter;
     if (id && id.length && pw && pw?.length) {
       await ml.config(id, pw);
     } else {
