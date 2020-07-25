@@ -116,7 +116,7 @@ export class ArmySoldierService extends SoldierService {
 
       await ml.setSoldier(soldierModel);
 
-      if ((await ml.updateNickname(letter.sender)) === false) {
+      if (!letter.sender || letter.sender.length === 0 || (await ml.updateNickname(letter.sender)) === false) {
         await ml.updateNickname('인편 대행 서비스');
       }
 

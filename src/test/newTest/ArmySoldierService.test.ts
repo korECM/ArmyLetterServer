@@ -229,7 +229,173 @@ describe('ArmySoldierService', () => {
     });
   });
 
-  describe('sendLetter', () => {});
+  describe('sendLetter', () => {
+    it('id, pw 주어지면 해당 정보로 config', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      armyStub.findByID.resolves(armySchemaTest);
+      // Act
+      let result = await controller.sendLetter(
+        '5f146ae09113064a9f7ed941',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '보낸이',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(milStub.config.calledOnceWith('아이디', '비밀번호')).toBe(true);
+    });
+    it('id가 주어지지 않으면 false 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+      // Act
+      let result = await controller.sendLetter(
+        '',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '보낸이',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(result).toBe(false);
+    });
+
+    it('Object id가 주어지지 않으면 false 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+      // Act
+      let result = await controller.sendLetter(
+        '123',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '보낸이',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(result).toBe(false);
+    });
+
+    it('sender 이름이 없는 경우 인편 대행 서비스로 이름 설정', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      armyStub.findByID.resolves(armySchemaTest);
+
+      // Act
+      let result = await controller.sendLetter(
+        '5f146ae09113064a9f7ed941',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(result).toBe(true);
+      expect(milStub.updateNickname.lastCall.calledWith('인편 대행 서비스')).toBe(true);
+    });
+
+    it('sender 이름이 이미 존재하는 경우 인편 대행 서비스로 이름 설정', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      armyStub.findByID.resolves(armySchemaTest);
+      milStub.updateNickname.resolves(false);
+
+      // Act
+      let result = await controller.sendLetter(
+        '5f146ae09113064a9f7ed941',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '중복되는 이름',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(result).toBe(true);
+      expect(milStub.updateNickname.lastCall.calledWith('인편 대행 서비스')).toBe(true);
+    });
+
+    it('전달된 편지 제목, 내용으로 sendLetter 호출', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new ArmySoldierService(armyStub, milStub);
+
+      armyStub.findByID.resolves(armySchemaTest);
+      milStub.updateNickname.resolves(false);
+
+      // Act
+      let result = await controller.sendLetter(
+        '5f146ae09113064a9f7ed941',
+        {
+          title: '제목',
+          body: '내용',
+          sender: '',
+          password: '비밀번호',
+          relationship: '관계',
+        },
+        '아이디',
+        '비밀번호',
+      );
+
+      // Assert
+      expect(result).toBe(true);
+      expect((milStub.sendLetter.args[0][0] as any).title).toBe('제목');
+      expect((milStub.sendLetter.args[0][0] as any).body).toBe('내용');
+    });
+  });
 
   describe('updateSubscription', () => {});
 });
