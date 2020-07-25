@@ -20,6 +20,19 @@ export interface MILLetterInterface {
   password?: string;
 }
 
+export interface SubscriptionRequestInterface {
+  sports: {
+    koreaBaseball: string[];
+    koreaBasketball: string[];
+    koreaSoccer: string[];
+    worldBaseball: string[];
+    worldBasketball: string[];
+    worldSoccer: string[];
+    esports: string[];
+  };
+  news: string[];
+}
+
 export abstract class SoldierService {
   constructor() {}
 
@@ -41,4 +54,6 @@ export abstract class SoldierService {
   abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
 
   abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterInterface): Promise<boolean>;
+
+  abstract async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 }

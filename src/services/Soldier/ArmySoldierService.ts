@@ -128,4 +128,8 @@ export class ArmySoldierService extends SoldierService {
       return false;
     }
   }
+
+  async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
+    return await this.ArmySoldierDBModel.saveSubscription(soldier, subscription);
+  }
 }
