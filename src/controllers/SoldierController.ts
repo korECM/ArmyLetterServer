@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query } from 'express-validator';
 import { Types } from 'mongoose';
-import { getAirForceSoldierWithLetters, getArmySoldierWithLetters } from '../services/GetSoldierFromDB';
 import { SoldierService } from '../services/Soldier/SoldierService';
 
 let { ObjectId } = Types;
@@ -15,7 +14,7 @@ export async function getSoldierProxy(req: Request, res: Response, next: NextFun
   let controller = SoldierService.getSoldierController(req.query.type as string);
   if (!controller) return res.status(406).send();
 
-  const soldier = controller.getDBSoldierById(req.params.id);
+  const soldier = controller.getDBSoldierById(req.params.id, 'letters');
 
   if (!soldier) return res.status(406).send();
 
