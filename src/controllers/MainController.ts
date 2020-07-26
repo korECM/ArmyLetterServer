@@ -1,10 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { body, validationResult } from 'express-validator';
-import { findAirForceSoldier } from '../services/FindSoldier';
-import { ArmySoldierInterface, ArmySoldierMIL } from '../module/MIL/Models/Army';
-import { AirForceSoldierInterface, AirForceSoldier } from '../module/MIL/Models';
-import ArmySoldierModel from '../models/ArmySoldier';
-import AirForceSoldierModel from '../models/AirForceSoldier';
+import { body } from 'express-validator';
 import { ArmySoldierService } from '../services/Soldier/ArmySoldierService';
 import { AirForceSoldierService } from '../services/Soldier/AirForceSolderService';
 
