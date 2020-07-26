@@ -61,7 +61,7 @@ export class ArmySoldierDB implements ArmySoldierDBInterface {
   constructor() {}
 
   async findByID(id: string, populate?: string) {
-    if (populate) (await ArmySoldier.findOne({ _id: id }).populate(populate).exec()) as ArmySoldierSchemaColumnsInterface;
+    if (populate) return (await ArmySoldier.findOne({ _id: id }).populate(populate).exec()) as ArmySoldierSchemaColumnsInterface;
     return (await ArmySoldier.findOne({ _id: id }).exec()) as ArmySoldierSchemaColumnsInterface;
   }
 
@@ -85,7 +85,7 @@ export class ArmySoldierDB implements ArmySoldierDBInterface {
   }
 
   async saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
-    let soldier = (await this.findByID(id)) as ArmySoldierSchemaInterface;
+    let soldier = (await this.findByID(id, 'sports')) as ArmySoldierSchemaInterface;
     if (!soldier) return false;
 
     let sports: SportsSchemaInterface | null;

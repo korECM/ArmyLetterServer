@@ -61,7 +61,7 @@ export class AirForceSoldierDB {
   constructor() {}
 
   async findByID(id: string, populate?: string) {
-    if (populate) (await AirForceSoldier.findOne({ _id: id }).populate(populate).exec()) as AirForceSchemaColumnsInterface;
+    if (populate !== undefined) return (await AirForceSoldier.findOne({ _id: id }).populate(populate).exec()) as AirForceSchemaColumnsInterface;
     return (await AirForceSoldier.findOne({ _id: id }).exec()) as AirForceSchemaColumnsInterface;
   }
 
@@ -85,7 +85,7 @@ export class AirForceSoldierDB {
   }
 
   async saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
-    let soldier = (await this.findByID(id)) as AirForceSchemaInterface;
+    let soldier = (await this.findByID(id, 'sports')) as AirForceSchemaInterface;
     if (!soldier) return false;
 
     let sports: SportsSchemaInterface | null;
