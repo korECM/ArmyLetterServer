@@ -10,14 +10,15 @@ import {
   AirForceSoldier as AirForceSoldierMIL,
 } from '../module/MIL/Models';
 import { MilitaryLetter } from '../module/MIL/Service/MilitaryLetter';
+import { AirForceSoldierService } from './Soldier/AirForceSolderService';
 
 export async function sendLetterInDBToSoldiers() {
   console.log('편지 전송 시작');
 
+  let airForceSoldierService = new AirForceSoldierService();
+
   try {
     let armySoldier = await ArmySoldier.find().populate('letters').exec();
-
-    console.log(armySoldier);
 
     armySoldier.forEach(async (soldier) => {
       console.log(`${soldier.name} 편지 전송 시작`);
@@ -54,13 +55,13 @@ export async function sendLetterInDBToSoldiers() {
         .filter((letter) => letter.sended === false)
         .forEach(async (letter) => {
           console.log(`${letter.title} 전송 시작`);
-          await sendAirForceSoldierLetter(soldier, {
+          await airForceSoldierService.sendLetter(soldier, {
             addr1: '',
             addr2: '',
             body: letter.body,
+            password: 'ArmyLetterService',
             relationship: '인편 대행',
             senderName: '인편 대행 서비스',
-            password: 'ArmyLetterService',
             title: letter.title,
             zipCode: '',
           });

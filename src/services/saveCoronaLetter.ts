@@ -29,11 +29,7 @@ async function coronaToString() {
     const apiInfo = await getCoronaInfo();
     if (apiInfo) {
       const { releasedAccToday, deathAccToday, confirmedAccToday, releasedToday, deathToday, confirmedToday } = apiInfo;
-      let date = new Date();
-      let resultString = `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 코로나 정보`;
-      resultString += '\n======================================================\n';
-      resultString += `확진자 : ${confirmedAccToday}(${confirmedToday}) 사망자 : ${deathAccToday}(${deathToday}) 격리 해제 : ${releasedAccToday}(${releasedToday})`;
-      resultString += '\n======================================================\n';
+      let resultString = `확진자 : ${confirmedAccToday}(${confirmedToday}) 사망자 : ${deathAccToday}(${deathToday}) 격리 해제 : ${releasedAccToday}(${releasedToday})`;
       return resultString;
     }
   } catch (error) {
