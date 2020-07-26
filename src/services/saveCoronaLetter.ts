@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import Letter from '../models/Letter';
-import ArmySoldierMIL from '../models/ArmySoldier';
-import AirForceSoldier from '../models/AirForceSoldier';
+import ArmySoldierMIL, { ArmySoldierDB } from '../models/ArmySoldier';
+import AirForceSoldier, { AirForceSoldierDB } from '../models/AirForceSoldier';
 
 export async function getCoronaInfo() {
   try {
@@ -57,21 +57,17 @@ export async function saveCoronaLetter() {
 
       await letter.save();
 
-      let armySoldier = await ArmySoldierMIL.find({ corona: true }).exec();
+      let armyDB = new ArmySoldierDB();
+      let airForceDB = new AirForceSoldierDB();
+      let armySoldiers = await armyDB.findSoldiers({ corona: true });
+      let airForceSoldiers = await airForceDB.findSoldiers({ corona: true });
 
-      armySoldier.forEach(async (soldier) => {
-        if (!soldier.letters) soldier.letters = [];
-        soldier.letters.push(letter._id);
-        await soldier.save();
-      });
-
-      let airForceSoldier = await AirForceSoldier.find({ corona: true }).exec();
-
-      airForceSoldier.forEach(async (soldier) => {
-        if (!soldier.letters) soldier.letters = [];
-        soldier.letters.push(letter._id);
-        await soldier.save();
-      });
+      for (let soldier of armySoldiers) {
+        await armyDB.saveLetter(soldier, letter);
+      }
+      for (let soldier of airForceSoldiers) {
+        await airForceDB.saveLetter(soldier, letter);
+      }
     } else {
       console.log('No Content');
     }
