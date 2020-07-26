@@ -53,7 +53,7 @@ export interface AirForceSoldierDBInterface {
   findByID(id: string, populate?: string): Promise<AirForceSchemaColumnsInterface>;
   create(data: AirForceSoldierDBCreateInterface): Promise<AirForceSchemaInterface>;
   saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
-  findSolders(option: any, populate?: string | undefined): Promise<AirForceSchemaInterface[]>;
+  findSoldiers(option: any, populate?: string | undefined): Promise<AirForceSchemaInterface[]>;
   saveLetter(soldier: AirForceSchemaInterface, letter: LetterSchemaInterface): Promise<void>;
 }
 
@@ -71,7 +71,7 @@ export class AirForceSoldierDB {
     return soldier;
   }
 
-  async findSolders(option: any, populate?: string) {
+  async findSoldiers(option: any, populate?: string) {
     if (populate) {
       return await AirForceSoldier.find(option).populate(populate);
     }
