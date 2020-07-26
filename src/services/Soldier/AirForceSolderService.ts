@@ -134,6 +134,7 @@ export class AirForceSoldierService extends AbstractSoldierService {
   }
 
   async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
-    return true;
+    if (this.checkIdValid(soldier) === false) return false;
+    return await this.AirForceSoldierDBModel.saveSubscription(soldier, subscription);
   }
 }
