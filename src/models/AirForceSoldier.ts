@@ -49,6 +49,12 @@ interface AirForceSoldierDBCreateInterface {
   letters: string[];
 }
 
+export interface AirForceSoldierDBInterface {
+  findByID(id: string, populate?: string): {};
+  create(data: AirForceSoldierDBCreateInterface): {};
+  saveSubscription(id: string, subscription: SubscriptionRequestInterface): any;
+}
+
 export class AirForceSoldierDB {
   constructor() {}
 
