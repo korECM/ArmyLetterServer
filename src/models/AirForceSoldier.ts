@@ -1,8 +1,9 @@
 import mongoose, { Schema } from 'mongoose';
-import { SportsSchemaInterface } from './Sports';
+import Sports, { SportsSchemaInterface } from './Sports';
 import { LetterSchemaInterface } from './Letter';
+import { SubscriptionRequestInterface } from '../services/Soldier/SoldierService';
 
-export interface AirForceSchemaInterface extends mongoose.Document {
+export interface AirForceSchemaColumnsInterface {
   name: string;
   birthDate: string;
   enterDate: string;
@@ -15,6 +16,8 @@ export interface AirForceSchemaInterface extends mongoose.Document {
   corona: boolean;
   registerDate: Date;
 }
+
+export interface AirForceSchemaInterface extends mongoose.Document, AirForceSchemaColumnsInterface {}
 
 export let AirForceSchema = new Schema({
   name: String,
@@ -35,3 +38,65 @@ export let AirForceSchema = new Schema({
 
 const AirForceSoldier = mongoose.model<AirForceSchemaInterface>('AirForceSoldier', AirForceSchema);
 export default AirForceSoldier;
+
+interface AirForceSoldierDBCreateInterface {
+  name: string;
+  birthDate: string;
+  enterDate: string;
+  trainUnitEdNm: string;
+  endDate: string;
+  image: string;
+  letters: string[];
+}
+
+export class AirForceSoldierDB {
+  constructor() {}
+
+  async findByID(id: string, populate?: string) {
+    if (populate) (await AirForceSoldier.findOne({ _id: id }).populate(populate).exec()) as AirForceSchemaColumnsInterface;
+    return (await AirForceSoldier.findOne({ _id: id }).exec()) as AirForceSchemaColumnsInterface;
+  }
+
+  async create(data: AirForceSoldierDBCreateInterface) {
+    let soldier = new AirForceSoldier(data);
+    await soldier.save();
+    return soldier;
+  }
+
+  async saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
+    let soldier = (await this.findByID(id)) as AirForceSchemaInterface;
+    if (!soldier) return false;
+
+    let sports: SportsSchemaInterface | null;
+
+    // undefined or null
+    if (!soldier.sports) {
+      sports = new Sports();
+      soldier.sports = sports._id;
+    } else {
+      sports = soldier.sports;
+    }
+
+    const { koreaBaseball, koreaBasketball, koreaSoccer, worldBaseball, worldBasketball, worldSoccer, esports } = subscription.sports;
+
+    sports.koreaBaseball = koreaBaseball;
+    sports.koreaBasketball = koreaBasketball;
+    sports.koreaSoccer = koreaSoccer;
+    sports.worldBaseball = worldBaseball;
+    sports.worldBasketball = worldBasketball;
+    sports.worldSoccer = worldSoccer;
+    sports.esports = esports;
+
+    await sports.save();
+
+    const { news } = subscription;
+
+    soldier.news = news;
+
+    // TODO: 코로나 추가
+
+    await soldier.save();
+
+    return true;
+  }
+}
