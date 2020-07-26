@@ -130,7 +130,28 @@ export class AirForceSoldierService extends AbstractSoldierService {
   }
 
   async sendLetter(soldier: AirForceSchemaColumnsInterface | string, letter: AirForceLetter): Promise<boolean> {
-    return true;
+    try {
+      let soldierModel = await this.getMILSoldierByDBSoldier(soldier);
+
+      if (!soldierModel) return false;
+
+      let ml = this.militaryLetter;
+
+      await ml.setSoldier(soldierModel);
+
+      if (!letter.senderName || letter.senderName.length === 0) {
+        letter.senderName = '인편 대행 서비스';
+      }
+
+      await ml.sendLetter(
+        new AirForceLetter(letter.title, letter.body, letter.senderName, letter.relationship, letter.zipCode, letter.addr1, letter.addr2, letter.password),
+      );
+
+      return true;
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   }
 
   async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean> {

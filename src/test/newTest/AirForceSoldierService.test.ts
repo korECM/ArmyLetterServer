@@ -295,7 +295,7 @@ describe('AirForceSoldierService', () => {
       armyStub.findByID.resolves(armySchemaTest);
 
       // Act
-      let result = await controller.sendLetter(BLANK_OBJECT_ID, {
+      let result = await controller.sendLetter(VALID_OBJECT_ID, {
         title: '제목',
         body: '내용',
         senderName: '',
@@ -308,10 +308,10 @@ describe('AirForceSoldierService', () => {
 
       // Assert
       expect(result).toBe(true);
-      expect(milStub.updateNickname.lastCall.calledWith('인편 대행 서비스')).toBe(true);
+      expect((milStub.sendLetter.args[0][0] as any).senderName).toBe('인편 대행 서비스');
     });
 
-    it('sender 이름이 이미 존재하는 경우 인편 대행 서비스로 이름 설정', async () => {
+    it('전달된 내용으로 sendLetter 호출', async () => {
       // Arrange
       let armyDB = new AirForceSoldierDB();
       let armyStub = sinon.stub(armyDB);
@@ -323,35 +323,7 @@ describe('AirForceSoldierService', () => {
       milStub.updateNickname.resolves(false);
 
       // Act
-      let result = await controller.sendLetter(BLANK_OBJECT_ID, {
-        title: '제목',
-        body: '내용',
-        senderName: '중복되는 이름',
-        password: '비밀번호',
-        relationship: '관계',
-        addr1: '',
-        addr2: '',
-        zipCode: '',
-      });
-
-      // Assert
-      expect(result).toBe(true);
-      expect(milStub.updateNickname.lastCall.calledWith('인편 대행 서비스')).toBe(true);
-    });
-
-    it('전달된 편지 제목, 내용으로 sendLetter 호출', async () => {
-      // Arrange
-      let armyDB = new AirForceSoldierDB();
-      let armyStub = sinon.stub(armyDB);
-      let mil = new MilitaryLetter();
-      let milStub = sinon.stub(mil);
-      let controller = new AirForceSoldierService(armyStub, milStub);
-
-      armyStub.findByID.resolves(armySchemaTest);
-      milStub.updateNickname.resolves(false);
-
-      // Act
-      let result = await controller.sendLetter(BLANK_OBJECT_ID, {
+      let result = await controller.sendLetter(VALID_OBJECT_ID, {
         title: '제목',
         body: '내용',
         senderName: '보낸이',
@@ -366,6 +338,9 @@ describe('AirForceSoldierService', () => {
       expect(result).toBe(true);
       expect((milStub.sendLetter.args[0][0] as any).title).toBe('제목');
       expect((milStub.sendLetter.args[0][0] as any).body).toBe('내용');
+      expect((milStub.sendLetter.args[0][0] as any).senderName).toBe('보낸이');
+      expect((milStub.sendLetter.args[0][0] as any).relationship).toBe('관계');
+      expect((milStub.sendLetter.args[0][0] as any).password).toBe('비밀번호');
     });
   });
 
