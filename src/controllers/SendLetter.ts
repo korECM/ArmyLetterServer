@@ -4,6 +4,8 @@ import { Types } from 'mongoose';
 import { sendAirForceSoldierLetter } from '../services/sendLetter';
 import { AirForceLetter } from '../module/MIL/Models';
 import { SoldierService } from '../services/Soldier/SoldierService';
+import { ArmySoldierService } from '../services/Soldier/ArmySoldierService';
+import { ArmySoldierSchemaColumnsInterface } from '../models/ArmySoldier';
 
 let { ObjectId } = Types;
 
@@ -28,7 +30,13 @@ export async function sendLetterProxy(req: Request, res: Response, next: NextFun
     if (!sender || !password || !relationship) return res.status(400).send();
     await sendAirForceSoldierLetter(soldier, new AirForceLetter(title, body, sender, relationship, '', '', '', password));
   } else {
-    await soldierController.sendLetter(soldier, { title, body, senderName: sender, relationship, password });
+    await (soldierController as ArmySoldierService).sendLetter(soldier as ArmySoldierSchemaColumnsInterface, {
+      title,
+      body,
+      senderName: sender,
+      relationship,
+      password,
+    });
   }
 
   return res.status(200).json(soldier);
