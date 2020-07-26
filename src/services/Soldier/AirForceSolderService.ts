@@ -3,6 +3,7 @@ import { AirForceSoldierDBInterface, AirForceSoldierDB, AirForceSchemaColumnsInt
 import { IMilitaryLetter } from '../../module/MIL/Service/IMilitaryLetter';
 import { MilitaryLetter, AirForceSoldier } from '../../module/MIL/Service/MilitaryLetter';
 import { AirForceSoldierInterface, AirForceLetter } from '../../module/MIL/Models';
+import { isValidObjectId } from 'mongoose';
 
 export class AirForceSoldierService extends AbstractSoldierService {
   constructor(
@@ -12,8 +13,21 @@ export class AirForceSoldierService extends AbstractSoldierService {
     super();
   }
 
+  /**
+   * 모델 id가 적절한지 검사하는 함수
+   *
+   * @private
+   * @param {string} id
+   * @returns {boolean}
+   * @memberof ArmySoldierService
+   */
+  private checkIdValid(id: string): boolean {
+    return !!id && id.length > 0 && isValidObjectId(id);
+  }
+
   async getDBSoldierById(id: string): Promise<AirForceSchemaColumnsInterface | null> {
-    return null;
+    if (this.checkIdValid(id) === false) return null;
+    return await this.AirForceSoldierDBModel.findByID(id);
   }
 
   async getMILSoldierByDBSoldier(soldier: AirForceSchemaColumnsInterface | string): Promise<AirForceSoldier | null> {
