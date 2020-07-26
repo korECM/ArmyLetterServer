@@ -34,17 +34,16 @@ export interface SubscriptionRequestInterface {
   news: string[];
 }
 
-
 export abstract class AbstractSoldierService {
-    abstract async getDBSoldierById(id: string): Promise<SoldierSimpleDBModel | null>;
+  abstract async getDBSoldierById(id: string, populate?: string): Promise<SoldierSimpleDBModel | null>;
 
-    abstract async getMILSoldierByDBSoldier(soldier: SoldierSimpleDBModel | string): Promise<SoldierMILModel | null>;
-  
-    abstract async createDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<SoldierDBModel | null>;
-  
-    abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
-  
-    abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterInterface): Promise<boolean>;
-  
-    abstract async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
+  abstract async getMILSoldierByDBSoldier(soldier: SoldierSimpleDBModel | string): Promise<SoldierMILModel | null>;
+
+  abstract async createDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<SoldierDBModel | null>;
+
+  abstract async checkMILSoldierExistInSiteByDBSoldier(soldier: ArmySoldierInterface | AirForceSoldierInterface): Promise<boolean>;
+
+  abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterInterface): Promise<boolean>;
+
+  abstract async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 }

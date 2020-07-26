@@ -44,11 +44,11 @@ export class ArmySoldierService extends AbstractSoldierService {
    * @returns {(Promise<ArmySoldierSchemaColumnsInterface | null>)}
    * @memberof ArmySoldierService
    */
-  async getDBSoldierById(id: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
+  async getDBSoldierById(id: string, populate?: string): Promise<ArmySoldierSchemaColumnsInterface | null> {
     if (this.checkIdValid(id) === false) return null;
 
     try {
-      return await this.ArmySoldierDBModel.findByID(id);
+      return await this.ArmySoldierDBModel.findByID(id, populate);
     } catch (error) {
       console.error(error);
       return null;
