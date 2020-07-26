@@ -2,8 +2,9 @@ import sinon from 'sinon';
 import * as faker from 'faker/locale/ko';
 import { SubscriptionRequestInterface } from '../../services/Soldier/AbstractSoldierService';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
-import { AirForceSchemaColumnsInterface, AirForceSoldierDB } from '../../models/AirForceSoldier';
+import AirForceSoldier, { AirForceSchemaColumnsInterface, AirForceSoldierDB, AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { AirForceSoldierService } from '../../services/Soldier/AirForceSolderService';
+import Letter from '../../models/Letter';
 
 let armySchemaTest: AirForceSchemaColumnsInterface = {
   birthDate: '2000-02-20',
@@ -452,6 +453,40 @@ describe('AirForceSoldierService', () => {
       // Assert
       expect(result).toBe(true);
       expect(armyStub.saveSubscription.calledOnceWith(VALID_OBJECT_ID, subscriptionTest));
+    });
+  });
+
+  describe('saveLetter', () => {
+    it('편지를 저장하고 보낸 군인 수 반환', async () => {
+      // Arrange
+      let armyDB = new AirForceSoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new AirForceSoldierService(armyStub);
+
+      armyStub.findSoldiers.resolves([new AirForceSoldier(), new AirForceSoldier(), new AirForceSoldier()]);
+
+      // Act
+      let result = await controller.saveLetter({ corona: true }, new Letter());
+
+      // Assert
+      expect(armyStub.saveLetter.callCount).toBe(3);
+      expect(result).toBe(3);
+    });
+
+    it('보낼 군인이 없으면 0 반환', async () => {
+      // Arrange
+      let armyDB = new AirForceSoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new AirForceSoldierService(armyStub);
+
+      armyStub.findSoldiers.resolves([]);
+
+      // Act
+      let result = await controller.saveLetter({ corona: true }, new Letter());
+
+      // Assert
+      expect(armyStub.saveLetter.callCount).toBe(0);
+      expect(result).toBe(0);
     });
   });
 });

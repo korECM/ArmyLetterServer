@@ -4,6 +4,7 @@ import { IMilitaryLetter } from '../../module/MIL/Service/IMilitaryLetter';
 import { MilitaryLetter, AirForceSoldier } from '../../module/MIL/Service/MilitaryLetter';
 import { AirForceSoldierInterface, AirForceLetter } from '../../module/MIL/Models';
 import { isValidObjectId } from 'mongoose';
+import { LetterSchemaInterface } from '../../models/Letter';
 
 export class AirForceSoldierService extends AbstractSoldierService {
   constructor(
@@ -169,5 +170,14 @@ export class AirForceSoldierService extends AbstractSoldierService {
   async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean> {
     if (this.checkIdValid(soldier) === false) return false;
     return await this.AirForceSoldierDBModel.saveSubscription(soldier, subscription);
+  }
+
+  async saveLetter(options: any, letter: LetterSchemaInterface): Promise<number> {
+    let soldiers = await this.AirForceSoldierDBModel.findSoldiers(options);
+    if (!soldiers) return 0;
+    for (let soldier of soldiers) {
+      await this.AirForceSoldierDBModel.saveLetter(soldier, letter);
+    }
+    return soldiers.length;
   }
 }

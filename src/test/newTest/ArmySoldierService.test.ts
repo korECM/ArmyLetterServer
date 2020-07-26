@@ -2,9 +2,10 @@ import sinon from 'sinon';
 import * as faker from 'faker/locale/ko';
 import { SubscriptionRequestInterface } from '../../services/Soldier/AbstractSoldierService';
 import { ArmySoldierService } from '../../services/Soldier/ArmySoldierService';
-import { ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
+import ArmySoldier, { ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 import { ArmyUnitTypeName } from '../../module/MIL/Models';
+import Letter from '../../models/Letter';
 
 let armySchemaTest: ArmySoldierSchemaColumnsInterface = {
   armyUnit: '11사단',
@@ -451,6 +452,40 @@ describe('ArmySoldierService', () => {
       // Assert
       expect(result).toBe(true);
       expect(armyStub.saveSubscription.calledOnceWith(VALID_OBJECT_ID, subscriptionTest));
+    });
+  });
+
+  describe('saveLetter', () => {
+    it('편지를 저장하고 보낸 군인 수 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.findSoldiers.resolves([new ArmySoldier(), new ArmySoldier(), new ArmySoldier()]);
+
+      // Act
+      let result = await controller.saveLetter({ corona: true }, new Letter());
+
+      // Assert
+      expect(armyStub.saveLetter.callCount).toBe(3);
+      expect(result).toBe(3);
+    });
+
+    it('보낼 군인이 없으면 0 반환', async () => {
+      // Arrange
+      let armyDB = new ArmySoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let controller = new ArmySoldierService(armyStub);
+
+      armyStub.findSoldiers.resolves([]);
+
+      // Act
+      let result = await controller.saveLetter({ corona: true }, new Letter());
+
+      // Assert
+      expect(armyStub.saveLetter.callCount).toBe(0);
+      expect(result).toBe(0);
     });
   });
 });

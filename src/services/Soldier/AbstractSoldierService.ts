@@ -1,6 +1,7 @@
 import { ArmySoldierSchemaInterface, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface, AirForceSchemaColumnsInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, AirForceSoldier, ArmySoldierInterface, AirForceSoldierInterface, ArmyLetter, AirForceLetter } from '../../module/MIL/Models';
+import { LetterSchemaInterface } from '../../models/Letter';
 
 export type SoldierSimpleDBModel = ArmySoldierSchemaColumnsInterface | AirForceSchemaColumnsInterface;
 
@@ -46,4 +47,6 @@ export abstract class AbstractSoldierService {
   abstract async sendLetter(soldier: string | SoldierSimpleDBModel, letter: MILLetterInterface): Promise<boolean>;
 
   abstract async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
+
+  abstract async saveLetter(options: any, letter: LetterSchemaInterface): Promise<number>;
 }
