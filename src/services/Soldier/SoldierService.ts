@@ -15,9 +15,12 @@ export type MILLetterModel = ArmyLetter | AirForceLetter;
 export interface MILLetterInterface {
   title: string;
   body: string;
-  sender: string;
+  senderName: string;
   relationship?: string;
   password?: string;
+  zipCode?: string;
+  addr1?: string;
+  addr2?: string;
 }
 
 export interface SubscriptionRequestInterface {

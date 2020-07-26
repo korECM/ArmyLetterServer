@@ -28,7 +28,7 @@ export async function sendLetterProxy(req: Request, res: Response, next: NextFun
     if (!sender || !password || !relationship) return res.status(400).send();
     await sendAirForceSoldierLetter(soldier, new AirForceLetter(title, body, sender, relationship, '', '', '', password));
   } else {
-    await soldierController.sendLetter(soldier, { title, body, sender, relationship, password });
+    await soldierController.sendLetter(soldier, { title, body, senderName: sender, relationship, password });
   }
 
   return res.status(200).json(soldier);

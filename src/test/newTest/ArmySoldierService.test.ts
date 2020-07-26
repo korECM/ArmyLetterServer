@@ -254,7 +254,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '보낸이',
+          senderName: '보낸이',
           password: '비밀번호',
           relationship: '관계',
         },
@@ -278,7 +278,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '보낸이',
+          senderName: '보낸이',
           password: '비밀번호',
           relationship: '관계',
         },
@@ -303,7 +303,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '보낸이',
+          senderName: '보낸이',
           password: '비밀번호',
           relationship: '관계',
         },
@@ -331,7 +331,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '',
+          senderName: '',
           password: '비밀번호',
           relationship: '관계',
         },
@@ -361,7 +361,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '중복되는 이름',
+          senderName: '중복되는 이름',
           password: '비밀번호',
           relationship: '관계',
         },
@@ -391,7 +391,7 @@ describe('ArmySoldierService', () => {
         {
           title: '제목',
           body: '내용',
-          sender: '',
+          senderName: '',
           password: '비밀번호',
           relationship: '관계',
         },
