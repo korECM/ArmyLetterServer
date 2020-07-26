@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import Sports, { SportsSchemaInterface } from './Sports';
 import { LetterSchemaInterface } from './Letter';
-import { SubscriptionRequestInterface } from '../services/Soldier/SoldierService';
+import { SubscriptionRequestInterface } from '../services/Soldier/AbstractSoldierService';
 
 export interface AirForceSchemaColumnsInterface {
   name: string;

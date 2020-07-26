@@ -1,6 +1,6 @@
 import sinon from 'sinon';
 import * as faker from 'faker/locale/ko';
-import { SoldierService, SubscriptionRequestInterface } from '../../services/Soldier/SoldierService';
+import { SubscriptionRequestInterface } from '../../services/Soldier/AbstractSoldierService';
 import { ArmySoldierService } from '../../services/Soldier/ArmySoldierService';
 import { ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';

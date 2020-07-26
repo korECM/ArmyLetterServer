@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose';
 import Sports, { SportsSchemaInterface } from './Sports';
 import { LetterSchemaInterface } from './Letter';
 import { ArmyUnitTypeName } from '../module/MIL/Models/Army';
-import { SubscriptionRequestInterface } from '../services/Soldier/SoldierService';
+import { SubscriptionRequestInterface } from '../services/Soldier/AbstractSoldierService';
 
 export interface ArmySoldierSchemaColumnsInterface {
   name: string;

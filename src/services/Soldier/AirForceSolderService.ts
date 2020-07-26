@@ -1,10 +1,10 @@
-import { SoldierService, SubscriptionRequestInterface } from './SoldierService';
+import { SubscriptionRequestInterface, AbstractSoldierService } from './AbstractSoldierService';
 import { AirForceSoldierDBInterface, AirForceSoldierDB, AirForceSchemaColumnsInterface, AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { IMilitaryLetter } from '../../module/MIL/Service/IMilitaryLetter';
 import { MilitaryLetter, AirForceSoldier } from '../../module/MIL/Service/MilitaryLetter';
 import { AirForceSoldierInterface, AirForceLetter } from '../../module/MIL/Models';
 
-export class AirForceSoldierService extends SoldierService {
+export class AirForceSoldierService extends AbstractSoldierService {
   constructor(
     private AirForceSoldierDBModel: AirForceSoldierDBInterface = new AirForceSoldierDB(),
     private militaryLetter: IMilitaryLetter = new MilitaryLetter(),

@@ -1,13 +1,12 @@
-import { SoldierService, MILLetterInterface, SubscriptionRequestInterface } from './SoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierDBInterface, ArmySoldierDB, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
 import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, ArmySoldierInterface, ArmyUnitTypeName, ArmyLetter } from '../../module/MIL/Models';
-import { SoldierSimpleDBModel, SoldierMILModel } from './SoldierService';
+import { SoldierSimpleDBModel, SoldierMILModel, MILLetterInterface, SubscriptionRequestInterface, AbstractSoldierService } from './AbstractSoldierService';
 import { MilitaryLetter } from '../../module/MIL/Service/MilitaryLetter';
 import { isValidObjectId } from 'mongoose';
 import { IMilitaryLetter } from '../../module/MIL/Service/IMilitaryLetter';
 
-export class ArmySoldierService extends SoldierService {
+export class ArmySoldierService extends AbstractSoldierService {
   constructor(private ArmySoldierDBModel: ArmySoldierDBInterface = new ArmySoldierDB(), private militaryLetter: IMilitaryLetter = new MilitaryLetter()) {
     super();
   }
