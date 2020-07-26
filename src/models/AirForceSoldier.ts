@@ -50,9 +50,9 @@ interface AirForceSoldierDBCreateInterface {
 }
 
 export interface AirForceSoldierDBInterface {
-  findByID(id: string, populate?: string): {};
-  create(data: AirForceSoldierDBCreateInterface): {};
-  saveSubscription(id: string, subscription: SubscriptionRequestInterface): any;
+  findByID(id: string, populate?: string): Promise<AirForceSchemaColumnsInterface>;
+  create(data: AirForceSoldierDBCreateInterface): Promise<AirForceSchemaInterface>;
+  saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 }
 
 export class AirForceSoldierDB {
