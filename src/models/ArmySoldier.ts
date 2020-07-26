@@ -114,7 +114,9 @@ export class ArmySoldierDB implements ArmySoldierDBInterface {
 
     soldier.news = news;
 
-    // TODO: 코로나 추가
+    const { corona } = subscription;
+
+    soldier.corona = corona;
 
     await soldier.save();
 

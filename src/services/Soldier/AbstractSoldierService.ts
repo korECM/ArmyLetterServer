@@ -33,6 +33,7 @@ export interface SubscriptionRequestInterface {
     esports: string[];
   };
   news: string[];
+  corona: boolean;
 }
 
 export abstract class AbstractSoldierService {
