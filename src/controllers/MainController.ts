@@ -14,6 +14,11 @@ export let createArmySoldierValidator = [
 export async function createArmySoldierProxy(req: Request, res: Response, next: NextFunction) {
   // const soldier = await createArmySoldier(req.body);
   let soldierController = new ArmySoldierService();
+  let existSoldier = await soldierController.findSoldier(req.body.name, req.body.birthDate);
+  if (existSoldier) {
+    return res.status(201).json(existSoldier);
+  }
+
   const soldier = await soldierController.createDBSoldier(req.body);
 
   if (soldier == null) return res.status(404).send();
@@ -50,6 +55,10 @@ export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate
 export async function createAirSoldierProxy(req: Request, res: Response, next: NextFunction) {
   // const soldier = await createAirSoldier(req.body);
   let soldierController = new AirForceSoldierService();
+  let existSoldier = await soldierController.findSoldier(req.body.name, req.body.birthDate);
+  if (existSoldier) {
+    return res.status(201).json(existSoldier);
+  }
   const soldier = await soldierController.createDBSoldier(req.body);
 
   if (soldier == null) return res.status(404).send();
