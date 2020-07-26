@@ -46,6 +46,7 @@ export interface ArmySoldierDBInterface {
   saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
   findSoldiers(option: any, populate?: string | undefined): Promise<ArmySoldierSchemaInterface[]>;
   saveLetter(soldier: ArmySoldierSchemaInterface, letter: LetterSchemaInterface): Promise<void>;
+  findSoldier(name: string, birthDate: string): Promise<ArmySoldierSchemaColumnsInterface>;
 }
 
 interface ArmySoldierDBCreateInterface {
@@ -59,6 +60,10 @@ interface ArmySoldierDBCreateInterface {
 }
 export class ArmySoldierDB implements ArmySoldierDBInterface {
   constructor() {}
+
+  async findSoldier(name: string, birthDate: string) {
+    return (await ArmySoldier.findOne({ name, birthDate }).exec()) as ArmySoldierSchemaColumnsInterface;
+  }
 
   async findByID(id: string, populate?: string) {
     if (populate) return (await ArmySoldier.findOne({ _id: id }).populate(populate).exec()) as ArmySoldierSchemaColumnsInterface;

@@ -55,10 +55,15 @@ export interface AirForceSoldierDBInterface {
   saveSubscription(id: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
   findSoldiers(option: any, populate?: string | undefined): Promise<AirForceSchemaInterface[]>;
   saveLetter(soldier: AirForceSchemaInterface, letter: LetterSchemaInterface): Promise<void>;
+  findSoldier(name: string, birthDate: string): Promise<AirForceSchemaColumnsInterface>;
 }
 
 export class AirForceSoldierDB {
   constructor() {}
+
+  async findSoldier(name: string, birthDate: string) {
+    return (await AirForceSoldier.findOne({ name, birthDate }).exec()) as AirForceSchemaColumnsInterface;
+  }
 
   async findByID(id: string, populate?: string) {
     if (populate !== undefined) return (await AirForceSoldier.findOne({ _id: id }).populate(populate).exec()) as AirForceSchemaColumnsInterface;

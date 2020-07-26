@@ -23,6 +23,10 @@ export class ArmySoldierService extends AbstractSoldierService {
     return !!id && id.length > 0 && isValidObjectId(id);
   }
 
+  async findSoldier(name: string, birthDate: string) {
+    return this.ArmySoldierDBModel.findSoldier(name, birthDate);
+  }
+
   /**
    * DBId 또는 군인 모델을 전달받았을 때 군인 모델을 반환해준다
    *

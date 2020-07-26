@@ -26,6 +26,10 @@ export class AirForceSoldierService extends AbstractSoldierService {
     return !!id && id.length > 0 && isValidObjectId(id);
   }
 
+  async findSoldier(name: string, birthDate: string) {
+    return this.AirForceSoldierDBModel.findSoldier(name, birthDate);
+  }
+
   async getDBSoldierById(id: string, populate?: string): Promise<AirForceSchemaColumnsInterface | null> {
     if (this.checkIdValid(id) === false) return null;
     return await this.AirForceSoldierDBModel.findByID(id, populate);

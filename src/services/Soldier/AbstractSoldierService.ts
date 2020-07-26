@@ -50,4 +50,6 @@ export abstract class AbstractSoldierService {
   abstract async updateSubscription(soldier: string, subscription: SubscriptionRequestInterface): Promise<boolean>;
 
   abstract async saveLetter(options: any, letter: LetterSchemaInterface): Promise<number>;
+
+  abstract async findSoldier(name: string, birthDate: string): Promise<SoldierSimpleDBModel>;
 }
