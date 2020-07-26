@@ -19,7 +19,7 @@ export class AirForceSoldierService extends AbstractSoldierService {
    * @private
    * @param {string} id
    * @returns {boolean}
-   * @memberof ArmySoldierService
+   * @memberof AirForceSoldierService
    */
   private checkIdValid(id: string): boolean {
     return !!id && id.length > 0 && isValidObjectId(id);
@@ -30,19 +30,38 @@ export class AirForceSoldierService extends AbstractSoldierService {
     return await this.AirForceSoldierDBModel.findByID(id);
   }
 
+  /**
+   * DBId 또는 군인 모델을 전달받았을 때 군인 모델을 반환해준다
+   *
+   * @private
+   * @param {(AirForceSchemaColumnsInterface | string)} soldier
+   * @returns
+   * @memberof AirForceSoldierService
+   */
+  private async getDBSoldierBetweenModelAndId(soldier: AirForceSchemaColumnsInterface | string) {
+    if (typeof soldier === 'string') {
+      return await this.getDBSoldierById(soldier);
+    } else {
+      return soldier;
+    }
+  }
+
   async getMILSoldierByDBSoldier(soldier: AirForceSchemaColumnsInterface | string): Promise<AirForceSoldier | null> {
-    return null;
+    let dbSoldier = await this.getDBSoldierBetweenModelAndId(soldier);
+    if (dbSoldier === null) return null;
+
+    return this.convertDBSoldierToMILSoldier(dbSoldier);
   }
 
   /**
    * MIL 모듈에 해당 군인을 요청하고 군인을 가져온다
    *
    * @private
-   * @param {ArmySoldierMIL} soldier
+   * @param {AirForceSoldier} soldier
    * @param {string} [id]
    * @param {string} [pw]
    * @returns
-   * @memberof ArmySoldierService
+   * @memberof AirForceSoldierService
    */
   private async getMILSoldierFromSite(soldier: AirForceSoldier, id?: string, pw?: string) {
     try {
@@ -66,6 +85,27 @@ export class AirForceSoldierService extends AbstractSoldierService {
       imageURL: soldier.imageURL,
       soldierInfo: soldier.soldierInfo,
       traineeNum: soldier.traineeNum,
+    });
+  }
+
+  /**
+   * DB 모델을 MIL 모델로 변환
+   *
+   * @private
+   * @param {(AirForceSchemaColumnsInterface | null)} soldierModel
+   * @returns
+   * @memberof AirForceSoldierService
+   */
+  private convertDBSoldierToMILSoldier(soldierModel: AirForceSchemaColumnsInterface | null) {
+    if (soldierModel === null) return null;
+    return new AirForceSoldier({
+      birthDate: soldierModel.birthDate.replace(/-/g, ''),
+      name: soldierModel.name,
+      endDate: soldierModel.endDate,
+      enterDate: soldierModel.enterDate,
+      imageURL: soldierModel.image,
+      soldierInfo: soldierModel.trainUnitEdNm,
+      traineeNum: '',
     });
   }
 
