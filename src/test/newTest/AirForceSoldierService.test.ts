@@ -284,6 +284,69 @@ describe('AirForceSoldierService', () => {
       expect(result).toBe(false);
     });
 
+    it('제목, 내용, 비밀번호, 관계 등이 없으면 false 반환', async () => {
+      // Arrange
+      let armyDB = new AirForceSoldierDB();
+      let armyStub = sinon.stub(armyDB);
+      let mil = new MilitaryLetter();
+      let milStub = sinon.stub(mil);
+      let controller = new AirForceSoldierService(armyStub, milStub);
+
+      armyStub.findByID.resolves(armySchemaTest);
+      // Act
+      let result: boolean[] = [];
+      let testData = [
+        {
+          title: '',
+          body: '내용',
+          senderName: '보낸이',
+          password: '비밀번호',
+          relationship: '관계',
+          addr1: '',
+          addr2: '',
+          zipCode: '',
+        },
+        {
+          title: '제목',
+          body: '',
+          senderName: '보낸이',
+          password: '비밀번호',
+          relationship: '관계',
+          addr1: '',
+          addr2: '',
+          zipCode: '',
+        },
+        {
+          title: '제목',
+          body: '내용',
+          senderName: '보낸이',
+          password: '',
+          relationship: '관계',
+          addr1: '',
+          addr2: '',
+          zipCode: '',
+        },
+        {
+          title: '제목',
+          body: '내용',
+          senderName: '보낸이',
+          password: '비밀번호',
+          relationship: '',
+          addr1: '',
+          addr2: '',
+          zipCode: '',
+        },
+      ];
+      for (let letter of testData) {
+        let temp = await controller.sendLetter(VALID_OBJECT_ID, letter);
+        result.push(temp);
+      }
+
+      // Assert
+      expect(armyStub.findByID.callCount).toBe(0);
+      expect(result.every((element) => element === false)).toBe(true);
+    });
+
     it('sender 이름이 없는 경우 인편 대행 서비스로 이름 설정', async () => {
       // Arrange
       let armyDB = new AirForceSoldierDB();

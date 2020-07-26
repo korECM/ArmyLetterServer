@@ -130,6 +130,18 @@ export class AirForceSoldierService extends AbstractSoldierService {
   }
 
   async sendLetter(soldier: AirForceSchemaColumnsInterface | string, letter: AirForceLetter): Promise<boolean> {
+    function checkStringValid(data: string): boolean {
+      return !!data && data.length > 0;
+    }
+
+    if (
+      checkStringValid(letter.title) === false ||
+      checkStringValid(letter.body) === false ||
+      checkStringValid(letter.password) === false ||
+      checkStringValid(letter.relationship) === false
+    )
+      return false;
+
     try {
       let soldierModel = await this.getMILSoldierByDBSoldier(soldier);
 
