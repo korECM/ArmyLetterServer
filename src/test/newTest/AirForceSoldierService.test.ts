@@ -23,6 +23,7 @@ let armySchemaTest: AirForceSchemaColumnsInterface = {
 let subscriptionTest: SubscriptionRequestInterface = {
   news: [],
   sports: { esports: [], koreaBaseball: [], koreaBasketball: [], koreaSoccer: [], worldBaseball: [], worldBasketball: [], worldSoccer: [] },
+  corona: true,
 };
 
 const VALID_OBJECT_ID = '5f146ae09113064a9f7ed941';
@@ -73,7 +74,7 @@ describe('AirForceSoldierService', () => {
       let traineeNum = '1교육대 4중대';
       let imageURL = 'https://www.naver.com';
 
-      milStub.getSoldier.returns({ birthDate, enterDate, name, endDate, imageURL, traineeNum });
+      milStub.getSoldier.returns({ birthDate: birthDate.replace(/-/g, ''), enterDate, name, endDate, imageURL, traineeNum });
 
       // Act
       let result = await controller.createDBSoldier({

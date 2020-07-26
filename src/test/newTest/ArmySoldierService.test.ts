@@ -24,6 +24,7 @@ let armySchemaTest: ArmySoldierSchemaColumnsInterface = {
 let subscriptionTest: SubscriptionRequestInterface = {
   news: [],
   sports: { esports: [], koreaBaseball: [], koreaBasketball: [], koreaSoccer: [], worldBaseball: [], worldBasketball: [], worldSoccer: [] },
+  corona: true,
 };
 
 const VALID_OBJECT_ID = '5f146ae09113064a9f7ed941';
