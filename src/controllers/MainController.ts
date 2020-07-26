@@ -45,7 +45,7 @@ export async function createArmySoldierProxy(req: Request, res: Response, next: 
 //   return null;
 // }
 
-export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').notEmpty().isLength({ max: 8, min: 8 })];
+export let createAirSoldierValidator = [body('name').notEmpty(), body('birthDate').notEmpty().isLength({ max: 10, min: 10 })];
 
 export async function createAirSoldierProxy(req: Request, res: Response, next: NextFunction) {
   // const soldier = await createAirSoldier(req.body);
