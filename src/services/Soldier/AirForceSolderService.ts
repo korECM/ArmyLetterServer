@@ -118,9 +118,8 @@ export class AirForceSoldierService extends AbstractSoldierService {
     let milSoldier = await this.getMILSoldierFromSite(this.createMILSoldier(soldier));
     if (milSoldier === null) return null;
 
-    // TODO: birthDate가 -형태로 넘어오는지 확인 필요
     return await this.AirForceSoldierDBModel.create({
-      birthDate: milSoldier.birthDate,
+      birthDate: [milSoldier.birthDate.substring(0, 4), milSoldier.birthDate.substring(4, 6), milSoldier.birthDate.substring(6)].join('-'),
       endDate: milSoldier.endDate!,
       enterDate: milSoldier.enterDate!,
       image: milSoldier.imageURL!,
