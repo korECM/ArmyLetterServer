@@ -70,8 +70,9 @@ describe('AirForceSoldierService', () => {
       let endDate = dateToString(faker.date.recent());
       let name = `${faker.name.lastName()}${faker.name.firstName()}`;
       let traineeNum = '1교육대 4중대';
+      let imageURL = 'https://www.naver.com';
 
-      milStub.getSoldier.returns({ birthDate, enterDate, name, endDate });
+      milStub.getSoldier.returns({ birthDate, enterDate, name, endDate, imageURL, traineeNum });
 
       // Act
       let result = await controller.createDBSoldier({
@@ -79,7 +80,7 @@ describe('AirForceSoldierService', () => {
         birthDate,
         enterDate,
         endDate,
-        imageURL: 'imageLink',
+        imageURL,
         soldierInfo: '군인 정보',
         traineeNum,
       });
@@ -91,7 +92,7 @@ describe('AirForceSoldierService', () => {
           enterDate,
           endDate,
           name,
-          image: 'imageLink',
+          image: imageURL,
           trainUnitEdNm: traineeNum,
           letters: [],
         }),
