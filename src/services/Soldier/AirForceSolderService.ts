@@ -86,7 +86,7 @@ export class AirForceSoldierService extends AbstractSoldierService {
   }
 
   async checkMILSoldierExistInSiteByDBSoldier(soldier: AirForceSoldierInterface): Promise<boolean> {
-    return true;
+    return (await this.getMILSoldierFromSite(soldier)) !== null;
   }
 
   async sendLetter(soldier: AirForceSchemaColumnsInterface | string, letter: AirForceLetter): Promise<boolean> {
