@@ -1,7 +1,7 @@
 import request from 'request-promise';
 import Letter from '../models/Letter';
-import ArmySoldierMIL, { ArmySoldierDB } from '../models/ArmySoldier';
-import AirForceSoldier, { AirForceSoldierDB } from '../models/AirForceSoldier';
+import { ArmySoldierService } from './Soldier/ArmySoldierService';
+import { AirForceSoldierService } from './Soldier/AirForceSolderService';
 
 export async function getCoronaInfo() {
   try {
@@ -57,17 +57,11 @@ export async function saveCoronaLetter() {
 
       await letter.save();
 
-      let armyDB = new ArmySoldierDB();
-      let airForceDB = new AirForceSoldierDB();
-      let armySoldiers = await armyDB.findSoldiers({ corona: true });
-      let airForceSoldiers = await airForceDB.findSoldiers({ corona: true });
+      let armySoldierService = new ArmySoldierService();
+      let airForceSoldierService = new AirForceSoldierService();
 
-      for (let soldier of armySoldiers) {
-        await armyDB.saveLetter(soldier, letter);
-      }
-      for (let soldier of airForceSoldiers) {
-        await airForceDB.saveLetter(soldier, letter);
-      }
+      await armySoldierService.saveLetter({ corona: true }, letter);
+      await airForceSoldierService.saveLetter({ corona: true }, letter);
     } else {
       console.log('No Content');
     }
