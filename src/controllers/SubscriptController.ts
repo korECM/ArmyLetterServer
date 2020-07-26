@@ -5,7 +5,13 @@ import { SoldierService } from '../services/Soldier/SoldierService';
 
 let { ObjectId } = Types;
 
-export let postSubValidator = [param('id').notEmpty(), query('type').notEmpty().isIn(['airForce', 'army']), body('sports').notEmpty()];
+export let postSubValidator = [
+  param('id').notEmpty(),
+  query('type').notEmpty().isIn(['airForce', 'army']),
+  body('sports').notEmpty(),
+  body('corona').isBoolean().notEmpty(),
+  body('news').notEmpty().toArray().isArray(),
+];
 
 export async function postSubscriptionProxy(req: Request, res: Response, next: NextFunction) {
   if (!ObjectId.isValid(req.params.id!)) return res.status(406).send();
