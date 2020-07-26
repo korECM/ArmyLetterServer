@@ -1,11 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { param, query, body } from 'express-validator';
 import { Types } from 'mongoose';
-import { sendAirForceSoldierLetter } from '../services/sendLetter';
-import { AirForceLetter } from '../module/MIL/Models';
 import { SoldierService } from '../services/Soldier/SoldierService';
 import { ArmySoldierService } from '../services/Soldier/ArmySoldierService';
 import { ArmySoldierSchemaColumnsInterface } from '../models/ArmySoldier';
+import { AirForceSchemaColumnsInterface } from '../models/AirForceSoldier';
+import { AirForceSoldierService } from '../services/Soldier/AirForceSolderService';
 
 let { ObjectId } = Types;
 
@@ -28,8 +28,18 @@ export async function sendLetterProxy(req: Request, res: Response, next: NextFun
 
   if (req.query.type === 'airForce') {
     if (!sender || !password || !relationship) return res.status(400).send();
-    await sendAirForceSoldierLetter(soldier, new AirForceLetter(title, body, sender, relationship, '', '', '', password));
-  } else {
+    (soldierController as AirForceSoldierService).sendLetter(soldier as AirForceSchemaColumnsInterface, {
+      title,
+      body,
+      senderName: sender,
+      password,
+      relationship,
+      addr1: '',
+      addr2: '',
+      zipCode: '',
+    });
+    // await sendAirForceSoldierLetter(soldier, new AirForceLetter(title, body, sender, relationship, '', '', '', password));
+  } else if (req.query.type === 'army') {
     await (soldierController as ArmySoldierService).sendLetter(soldier as ArmySoldierSchemaColumnsInterface, {
       title,
       body,
@@ -37,6 +47,8 @@ export async function sendLetterProxy(req: Request, res: Response, next: NextFun
       relationship,
       password,
     });
+  } else {
+    return res.status(404).send();
   }
 
   return res.status(200).json(soldier);
