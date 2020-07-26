@@ -1,8 +1,9 @@
 import { News, NewsCategory, getSimpleNews } from '../module/GetNews';
-import ArmySoldierMIL from '../models/ArmySoldier';
-import AirForceSoldier from '../models/AirForceSoldier';
+import ArmySoldierMIL, { ArmySoldierDB } from '../models/ArmySoldier';
+import AirForceSoldier, { AirForceSoldierDB } from '../models/AirForceSoldier';
 import db from '../DB';
 import Letter from '../models/Letter';
+import ArmySoldier from '../models/ArmySoldier';
 
 let newsName = {
   all: '종합',
@@ -99,8 +100,10 @@ interface NewsItem {
 
 async function saveNewsWithSoldier(category: NewsCategory, newsContents: NewsItem[]) {
   let date = new Date();
-  let armySoldiers = await ArmySoldierMIL.find({ news: category });
-  let airForceSoldiers = await AirForceSoldier.find({ news: category });
+  let armyDB = new ArmySoldierDB();
+  let airForceDB = new AirForceSoldierDB();
+  let armySoldiers = await armyDB.findSoldiers({ news: category });
+  let airForceSoldiers = await airForceDB.findSoldiers({ news: category });
 
   for (const news of newsContents) {
     let letter = new Letter({
@@ -109,20 +112,11 @@ async function saveNewsWithSoldier(category: NewsCategory, newsContents: NewsIte
     });
     await letter.save();
 
-    await Promise.all(
-      armySoldiers.map(async (soldier) => {
-        if (!soldier.letters) soldier.letters = [];
-        soldier.letters.push(letter._id);
-        await soldier.save();
-      }),
-    );
-
-    await Promise.all(
-      airForceSoldiers.map(async (soldier) => {
-        if (!soldier.letters) soldier.letters = [];
-        soldier.letters.push(letter._id);
-        await soldier.save();
-      }),
-    );
+    for (let soldier of armySoldiers) {
+      await armyDB.saveLetter(soldier, letter);
+    }
+    for (let soldier of airForceSoldiers) {
+      await airForceDB.saveLetter(soldier, letter);
+    }
   }
 }
