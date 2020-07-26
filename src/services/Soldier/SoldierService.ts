@@ -1,10 +1,10 @@
 import { MyError } from '../../types';
 import { ArmySoldierService } from './ArmySoldierService';
 import { ArmySoldierSchemaInterface, ArmySoldierSchemaColumnsInterface } from '../../models/ArmySoldier';
-import { AirForceSchemaInterface } from '../../models/AirForceSoldier';
+import { AirForceSchemaInterface, AirForceSchemaColumnsInterface } from '../../models/AirForceSoldier';
 import { ArmySoldierMIL, AirForceSoldier, ArmySoldierInterface, AirForceSoldierInterface, ArmyLetter, AirForceLetter } from '../../module/MIL/Models';
 
-export type SoldierSimpleDBModel = ArmySoldierSchemaColumnsInterface | AirForceSchemaInterface;
+export type SoldierSimpleDBModel = ArmySoldierSchemaColumnsInterface | AirForceSchemaColumnsInterface;
 
 export type SoldierDBModel = ArmySoldierSchemaInterface | AirForceSchemaInterface;
 
